@@ -18,19 +18,18 @@ export default class Navegacion extends Component {
     componentDidMount() {
         const userRoles = roles.getRoles();
         const cedula = auth.getInfo().cedula;
-        const length = userRoles.length;
-        if (cedula > 0) {
+        if (cedula !== '') {
             this.setState({
                 autenticado: true
             });
-            for (let i = 0; i < length; i++) {
-                let role = roles[i];
-                if (role.id_usuario === 1) {
+            for (let i = 0; i < userRoles.length; i++) {
+                let role = userRoles[i];
+                if (role.id_permiso === 1) {
                     this.setState({
                         gestUsuario: true
                     });
                 }
-                if (role.id_usuario === 1) {
+                if (role.id_permiso === 2) {
                     this.setState({
                         gestConsejo: true
                     });
@@ -41,13 +40,8 @@ export default class Navegacion extends Component {
 
     logOut() {
         localStorage.removeItem('il-consigliere');
-        const cleanUser = {
-            cedula: '',
-            nombre: '',
-            apellido: ''
-        }
-        auth.setInfo(cleanUser);
-        roles.checkRoles();
+        auth.cleanInfo();
+        roles.cleanRoles();
     }
 
     render() {
@@ -66,8 +60,13 @@ export default class Navegacion extends Component {
                                     <NavLink className="nav-link text" activeClassName="active" exact to="/consejos">Mis Consejos</NavLink>
                                 </li>
                                 {this.state.gestUsuario &&
-                                    <li className="nav-item">
-                                        <NavLink className="nav-link text" activeClassName="active" exact to="/gUsuarios">Gestión de Usuarios</NavLink>
+                                    <li className="nav-item dropdown">
+                                        <NavLink className="nav-link dropdown-toggle text" data-toggle="dropdown" to="/gUsuarios"
+                                            role="button" aria-haspopup="true" aria-expanded="false">Gestión de Usuarios</NavLink>
+                                        <div className="dropdown-menu">
+                                            <NavLink className="dropdown-item" activeClassName="active" exact to="/gUsuarios/usuarios">Lista de Usuarios</NavLink>
+                                            <NavLink className="dropdown-item" activeClassName="active" exact to="/gUsuarios/registro">Registro de Usuarios</NavLink>
+                                        </div>
                                     </li>
                                 }
                                 {this.state.gestConsejo &&

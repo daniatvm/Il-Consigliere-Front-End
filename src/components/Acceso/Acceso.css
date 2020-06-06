@@ -2,6 +2,6 @@
     height: 70vh;
 }
 
-.card-title{
-    text-transform: uppercase;
+.my-border{
+    border-color: gainsboro;
 }

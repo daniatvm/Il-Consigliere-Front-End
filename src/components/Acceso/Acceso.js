@@ -43,18 +43,22 @@ export default class Acceso extends Component {
             cedula: this.state.cedula,
             clave: this.state.clave
         }
-        const res = await axios.post('http://localhost:5000/usuario/inicio_sesion', usuario);
-        if (res.data.success) {
-            localStorage.setItem('il-consigliere', JSON.stringify({
-                token: res.data.token
-            }));
-            this.setState({
-                redirect: true
-            });
-        } else {
-            this.setState({
-                clave: ''
-            });
+        try {
+            const res = await axios.post('http://localhost:5000/usuario/inicio_sesion', usuario);
+            if (res.data.success) {
+                localStorage.setItem('il-consigliere', JSON.stringify({
+                    token: res.data.token
+                }));
+                this.setState({
+                    redirect: true
+                });
+            } else {
+                this.setState({
+                    clave: ''
+                });
+            }
+        } catch (err) {
+            console.log(err);
         }
     }
 
@@ -63,7 +67,7 @@ export default class Acceso extends Component {
             <>
                 <Navegacion />
                 <div className="row m-0 my-row">
-                    <div className="col-md-4 mx-auto my-auto">
+                    <div className="col-md-5 mx-auto my-auto">
                         <div className="card border-primary mb-3">
                             <div className="card-body">
                                 <h4 className="card-title text-center mb-4">Il Consigliere</h4>
@@ -84,7 +88,10 @@ export default class Acceso extends Component {
                                 </form>
                             </div>
                         </div>
-                        {/* hacer un informativo de pedir al administrador los datos */}
+                        <div className="alert alert-dismissible my-border alert-light pb-0">
+                            <button type="button" className="close" data-dismiss="alert">&times;</button>
+                            <p>Recuerda solicitar una cuenta a la persona encargada del sistema.</p>
+                        </div>
                     </div>
                 </div>
             </>
