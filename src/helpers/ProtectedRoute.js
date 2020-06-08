@@ -16,11 +16,15 @@ export default class ProtectedRoute extends Component {
         auth.isAuthenticated()
             .then(token => {
                 if (token) {
-                    this.setState({
-                        isLoading: false,
-                        isAuthentic: true,
-                        token: token
-                    });
+                    roles.checkRoles()
+                        .then(() => {
+                            this.setState({
+                                isLoading: false,
+                                isAuthentic: true,
+                                token: token
+                            });
+                        })
+                        .catch(err => console.log(err));
                 } else {
                     this.setState({
                         isLoading: false,
@@ -29,7 +33,6 @@ export default class ProtectedRoute extends Component {
                 }
             })
             .catch(err => console.log(err));
-        roles.checkRoles();
     }
 
     render() {
