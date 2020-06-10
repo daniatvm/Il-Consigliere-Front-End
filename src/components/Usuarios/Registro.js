@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import Navegacion from '../Navegacion/Navegacion';
 import axios from 'axios';
+import Navegacion from '../Navegacion/Navegacion';
 
 export default class Registro extends Component {
     constructor(props) {
@@ -120,7 +120,7 @@ export default class Registro extends Component {
                                         {checks}
                                     </div>
                                     <div className="form-group">
-                                        <button type="submit" className="btn btn-outline-primary btn-block mt-4">Registrar<i className="fas fa-save ml-2"></i></button>
+                                        <button type="submit" className="btn btn-outline-primary btn-block mt-4">Registrar</button>
                                     </div>
                                 </form>
                             </div>

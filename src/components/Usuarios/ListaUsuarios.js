@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import Navegacion from '../Navegacion/Navegacion';
 import axios from 'axios';
-import auth from '../../helpers/auth';
 import swal from 'sweetalert';
+import auth from '../../helpers/auth';
 import './ListaUsuarios.css';
 
 export default class ListaUsuarios extends Component {
@@ -64,7 +64,7 @@ export default class ListaUsuarios extends Component {
                         <td>{nombre}</td>
                         <td>{apellido}</td>
                         <td>
-                            <button className='btn btn-outline-secondary' onClick={(e) => this.deleteUser(e, cedula, nombre, apellido)}><i className="fas fa-trash-alt"></i></button>
+                            <button className='btn btn-outline-primary' onClick={(e) => this.deleteUser(e, cedula, nombre, apellido)}><i className="fas fa-trash-alt"></i></button>
                         </td>
                     </tr>
                 );

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Route, Redirect } from 'react-router-dom';
-import auth from './auth';
-import roles from './roles';
+import auth from '../auth';
+import roles from '../roles';
 
 export default class ProtectedRoute extends Component {
     constructor(props) {
@@ -26,6 +26,7 @@ export default class ProtectedRoute extends Component {
                         })
                         .catch(err => console.log(err));
                 } else {
+                    roles.cleanRoles();
                     this.setState({
                         isLoading: false,
                         isAuthentic: false
