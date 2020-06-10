@@ -1,0 +1,26 @@
+.my-row {
+    height: 80vh;
+}
+
+.my-div {
+    width: 80%;
+    padding: 0.75rem;
+    vertical-align: top;
+}
+
+.my-email{
+    width: 85%;
+}
+
+.my-email2{
+    width: 85%;
+    text-align: center;
+}
+
+.my-border{
+    border-top: 1px solid #DFD7CA
+}
+
+.my-muted{
+    color: grey;
+}

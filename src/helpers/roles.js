@@ -14,8 +14,26 @@ class Roles {
         this.roles = roles;
     }
 
-    cleanRoles(){
+    cleanRoles() {
         this.roles = [];
+    }
+
+    isUserModifier() {
+        for (let i = 0; i < this.roles.length; i++) {
+            if (this.roles[i].id_permiso === 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    isCouncilModifier() {
+        for (let i = 0; i < this.roles.length; i++) {
+            if (this.roles[i].id_permiso === 2) {
+                return true;
+            }
+        }
+        return false;
     }
 
     async checkRoles() {
