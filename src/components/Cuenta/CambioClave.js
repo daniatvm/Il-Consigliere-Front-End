@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import swal from 'sweetalert';
 import auth from '../../helpers/auth';
+import { Redirect } from 'react-router-dom';
 
 export default class CambioClave extends Component {
     constructor(props) {
@@ -9,7 +10,8 @@ export default class CambioClave extends Component {
         this.state = {
             actual: '',
             nueva: '',
-            confirmacion: ''
+            confirmacion: '',
+            redirect: false
         }
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -25,34 +27,45 @@ export default class CambioClave extends Component {
 
     handleSubmit(e) {
         e.preventDefault();
-        if (this.state.nueva === this.state.confirmacion) {
-            const user = {
-                cedula: auth.getInfo().cedula,
-                clave: this.state.actual
-            }
-            axios.post('http://localhost:5000/usuario/verificar_clave', user)
-                .then(res => {
-                    if (res.data.success) {
-                        const pass = {
-                            clave: this.state.nueva
+        auth.verifyToken()
+            .then(value => {
+                if (value) {
+                    if (this.state.nueva === this.state.confirmacion) {
+                        const user = {
+                            cedula: auth.getInfo().cedula,
+                            clave: this.state.actual
                         }
-                        axios.post(`http://localhost:5000/usuario/cambiar_clave/${user.cedula}`, pass)
+                        axios.post('http://localhost:5000/usuario/verificar_clave', user)
                             .then(res => {
                                 if (res.data.success) {
-                                    this.myAlert('Éxito', 'La contraseña se ha cambiado satisfactoriamente.', 'success');
+                                    const pass = {
+                                        clave: this.state.nueva
+                                    }
+                                    axios.post(`http://localhost:5000/usuario/cambiar_clave/${user.cedula}`, pass)
+                                        .then(res => {
+                                            if (res.data.success) {
+                                                this.myAlert('Éxito', 'La contraseña se ha cambiado satisfactoriamente.', 'success');
+                                            } else {
+                                                this.myAlert('Inténtelo más tarde', 'Error interno del servidor.', 'error');
+                                            }
+                                        })
+                                        .catch((err) => console.log(err));
                                 } else {
-                                    this.myAlert('Inténtelo más tarde', 'Error interno del servidor.', 'error');
+                                    this.myAlert('Verifique', 'Parece que digitaste mal la contraseña actual.', 'error');
                                 }
                             })
                             .catch((err) => console.log(err));
                     } else {
-                        this.myAlert('Verifique', 'Parece que digitaste mal la contraseña actual.', 'error');
+                        this.myAlert('Verifique', 'La contraseña nueva y su confirmación son distintas.', 'error');
                     }
-                })
-                .catch((err) => console.log(err));
-        } else {
-            this.myAlert('Verifique', 'La contraseña nueva y su confirmación son distintas.', 'error');
-        }
+                } else {
+                    this.setState({
+                        redirect: true
+                    });
+                    auth.logOut();
+                }
+            })
+            .catch((err) => console.log(err));
     }
 
     myAlert(title, text, icon) {
@@ -70,7 +83,7 @@ export default class CambioClave extends Component {
     }
 
     render() {
-        return (
+        return (this.state.redirect ? <Redirect to='/' /> :
             <>
                 <h4 className="text-center mb-4">Cambio de Contraseña</h4>
                 <p className="my-muted">La contraseña debe tener un largo mínimo de 4 caracteres.</p>

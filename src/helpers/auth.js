@@ -1,11 +1,13 @@
 import axios from 'axios';
+import roles from './roles';
 
 class Auth {
     constructor() {
         this.info = {
             cedula: '',
             nombre: '',
-            apellido: ''
+            apellido: '',
+            enSistema: false
         }
     }
 
@@ -13,7 +15,8 @@ class Auth {
         this.info = {
             cedula: info.cedula,
             nombre: info.nombre,
-            apellido: info.apellido
+            apellido: info.apellido,
+            enSistema: true
         }
     }
 
@@ -25,37 +28,42 @@ class Auth {
         this.info = {
             cedula: '',
             nombre: '',
-            apellido: ''
+            apellido: '',
+            enSistema: false
         }
     }
 
-    async isAuthenticated() {
-        try {
-            let store = JSON.parse(localStorage.getItem('il-consigliere'));
-            if (store) {
-                let token = 'Bearer ' + store.token;
-                let header = {
-                    headers: {
-                        authorization: token
-                    }
+    isAuthenticated() {
+        return this.info.enSistema;
+    }
+
+    logOut() {
+        localStorage.removeItem('il-consigliere');
+        this.cleanInfo();
+        roles.cleanRoles();
+    }
+
+    async verifyToken() {
+        let store = JSON.parse(localStorage.getItem('il-consigliere'));
+        if (store) {
+            let token = 'Bearer ' + store.token;
+            let header = {
+                headers: {
+                    authorization: token
                 }
-                const res = await axios.post('http://localhost:5000/usuario/verificar_token', null, header);
-                if (res.data.success) {
-                    const user = res.data.token.user;
-                    this.setInfo(user);
-                    return true;
-                }
-            } else {
-                const cleanUser = {
-                    cedula: '',
-                    nombre: '',
-                    apellido: ''
-                }
-                this.setInfo(cleanUser);
-                return false;
             }
-        } catch (err) {
-            console.log(err);
+            const res = await axios.post('http://localhost:5000/usuario/verificar_token', null, header);
+            if (res.data.success) {
+                const user = res.data.token.user;
+                this.setInfo(user);
+                return true;
+            } else {
+                this.cleanInfo();
+                return false
+            }
+        } else {
+            this.cleanInfo();
+            return false;
         }
     }
 }

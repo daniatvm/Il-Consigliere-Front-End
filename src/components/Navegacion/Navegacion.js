@@ -39,9 +39,7 @@ export default class Navegacion extends Component {
     }
 
     logOut() {
-        localStorage.removeItem('il-consigliere');
-        auth.cleanInfo();
-        roles.cleanRoles();
+        auth.logOut();
     }
 
     render() {
@@ -75,7 +73,7 @@ export default class Navegacion extends Component {
                                     </li>
                                 }
                                 <li className="nav-item">
-                                    <NavLink className="nav-link text" activeClassName="active" exact to="/cuenta">Mi Cuenta</NavLink>
+                                    <NavLink className="nav-link text" activeClassName="active" exact to="/cuenta" onClick={this.verifyToken}>Mi Cuenta</NavLink>
                                 </li>
                                 <li className="nav-item">
                                     <NavLink className="nav-link text" activeClassName="active" exact to="/" onClick={this.logOut}>Salir</NavLink>

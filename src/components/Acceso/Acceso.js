@@ -3,7 +3,8 @@ import { Redirect } from 'react-router-dom';
 import Navegacion from '../Navegacion/Navegacion';
 import axios from 'axios';
 import swal from 'sweetalert';
-import auth from '../../helpers/auth'
+import auth from '../../helpers/auth';
+import roles from '../../helpers/roles';
 import './Acceso.css';
 
 export default class Acceso extends Component {
@@ -19,12 +20,16 @@ export default class Acceso extends Component {
     }
 
     componentDidMount() {
-        auth.isAuthenticated()
-            .then(token => {
-                if (token) {
-                    this.setState({
-                        redirect: true
-                    });
+        auth.verifyToken()
+            .then(res => {
+                if (res) {
+                    roles.checkRoles()
+                        .then(() => {
+                            this.setState({
+                                redirect: true
+                            });
+                        })
+                        .catch((err) => console.log(err));
                 }
             })
             .catch((err) => console.log(err));
@@ -46,16 +51,21 @@ export default class Acceso extends Component {
         const usuario = {
             cedula: this.state.cedula,
             clave: this.state.clave
-        }
+        };
         axios.post('http://localhost:5000/usuario/inicio_sesion', usuario)
             .then(res => {
                 if (res.data.success) {
                     localStorage.setItem('il-consigliere', JSON.stringify({
                         token: res.data.token
                     }));
-                    this.setState({
-                        redirect: true
-                    });
+                    auth.setInfo(res.data.info);
+                    roles.checkRoles()
+                        .then(() => {
+                            this.setState({
+                                redirect: true
+                            });
+                        })
+                        .catch((err) => console.log(err));
                 } else {
                     swal({
                         title: "Credenciales Incorrectos",

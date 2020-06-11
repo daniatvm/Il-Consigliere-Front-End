@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import swal from 'sweetalert';
 import Navegacion from '../Navegacion/Navegacion';
+import auth from '../../helpers/auth';
+import { Redirect } from 'react-router-dom';
 
 export default class Registro extends Component {
     constructor(props) {
@@ -11,20 +14,36 @@ export default class Registro extends Component {
             apellido: '',
             permisos: [],
             gestionarUsuarios: false,
-            gestionarConsejos: false
+            gestionarConsejos: false,
+            redirect: false
         }
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentDidMount() {
-        axios.get('http://localhost:5000/permiso')
-            .then(res => {
-                this.setState({
-                    permisos: res.data
-                });
+        auth.verifyToken()
+            .then(value => {
+                if (value) {
+                    axios.get('http://localhost:5000/permiso')
+                        .then(res => {
+                            this.setState({
+                                permisos: res.data.roles
+                            });
+                        })
+                        .catch((err) => console.log(err));
+                } else {
+                    this.setState({
+                        redirect: true
+                    })
+                    auth.logOut();
+                }
             })
             .catch((err) => console.log(err));
+    }
+
+    getRandom(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
     }
 
     handleInputChange(e) {
@@ -41,37 +60,60 @@ export default class Registro extends Component {
 
     handleSubmit(e) {
         e.preventDefault();
-        const usuario = {
-            cedula: this.state.cedula,
-            nombre: this.state.nombre,
-            apellido: this.state.apellido,
-            clave: this.state.apellido
-        };
-        axios.post('http://localhost:5000/usuario', usuario)
-            .then((res) => {
-                if (this.state.gestionarUsuarios) {
-                    const usuarioPermiso = {
-                        id_permiso: 1,
-                        cedula: this.state.cedula
-                    };
-                    try {
-                        axios.post('http://localhost:5000/usuarioPermiso', usuarioPermiso);
-                    } catch (err) {
-                        console.log(err);
-                    }
+        auth.verifyToken()
+            .then(value => {
+                if (value) {
+                    axios.get(`http://localhost:5000/usuario/${this.state.cedula}`)
+                        .then(res => {
+                            if (!res.data.success) {
+                                const clave = this.getRandom(1000, 9999);
+                                const usuario = {
+                                    cedula: this.state.cedula,
+                                    nombre: this.state.nombre,
+                                    apellido: this.state.apellido,
+                                    clave: clave.toString()
+                                };
+                                axios.post('http://localhost:5000/usuario', usuario)
+                                    .then(async () => {
+                                        if (this.state.gestionarUsuarios) {
+                                            const usuarioPermiso = {
+                                                id_permiso: 1,
+                                                cedula: this.state.cedula
+                                            };
+                                            await axios.post('http://localhost:5000/usuarioPermiso', usuarioPermiso);
+                                        }
+                                        if (this.state.gestionarConsejos) {
+                                            const usuarioPermiso = {
+                                                id_permiso: 2,
+                                                cedula: this.state.cedula
+                                            };
+                                            await axios.post('http://localhost:5000/usuarioPermiso', usuarioPermiso);
+                                        }
+                                        swal({
+                                            title: "Contraseña del usuario",
+                                            text: `La contraseña del nuevo usuario es ${clave}`,
+                                            icon: "info",
+                                            button: "Ok"
+                                        });
+                                        this.props.history.push('/gUsuarios/usuarios');
+                                    })
+                                    .catch((err) => console.log(err));
+                            } else {
+                                swal({
+                                    title: "Este usuario ya existe",
+                                    text: "La cédula de este usuario ya se encuentra en el sistema.",
+                                    icon: "warning",
+                                    button: "Ok",
+                                });
+                            }
+                        })
+                        .catch((err) => console.log(err));
+                } else {
+                    this.setState({
+                        redirect: true
+                    })
+                    auth.logOut();
                 }
-                if (this.state.gestionarConsejos) {
-                    const usuarioPermiso = {
-                        id_permiso: 2,
-                        cedula: this.state.cedula
-                    };
-                    try {
-                        axios.post('http://localhost:5000/usuarioPermiso', usuarioPermiso);
-                    } catch (err) {
-                        console.log(err);
-                    }
-                }
-                this.props.history.push('/gUsuarios/usuarios');
             })
             .catch((err) => console.log(err));
     }
@@ -92,7 +134,7 @@ export default class Registro extends Component {
                 </div>
             );
         }
-        return (
+        return (this.state.redirect ? <Redirect to='/' /> :
             <>
                 <Navegacion />
                 <div className="row m-0 my-row">
