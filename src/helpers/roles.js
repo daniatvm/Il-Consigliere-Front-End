@@ -43,7 +43,11 @@ class Roles {
                 this.roles = [];
             } else {
                 const roles = await axios.get(`http://localhost:5000/usuario/permisos/${user.cedula}`);
-                this.setRoles(roles.data);
+                if(roles.data.success){
+                    this.setRoles(roles.data.roles);
+                }else{
+                    this.cleanRoles();
+                }
             }
         } catch (err) {
             console.log(err);

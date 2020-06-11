@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import './Inicio.css';
+import { Redirect } from 'react-router-dom';
 import Navegacion from '../Navegacion/Navegacion';
 import auth from '../../helpers/auth';
 import roles from '../../helpers/roles';
-import { Redirect } from 'react-router-dom';
+import './Inicio.css';
 
 export default class Inicio extends Component {
     constructor(props) {
@@ -14,9 +14,9 @@ export default class Inicio extends Component {
     }
 
     componentDidMount() {
-        auth.isAuthenticated()
-            .then(token => {
-                if (token) {
+        auth.verifyToken()
+            .then(res => {
+                if (res) {
                     roles.checkRoles()
                         .then(() => {
                             this.setState({
