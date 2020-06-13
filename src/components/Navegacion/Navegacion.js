@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import roles from '../../helpers/roles';
 import auth from '../../helpers/auth';
+import navBrand from '../../assets/navBrand.png';
 import './Navegacion.css';
 
 export default class Navegacion extends Component {
@@ -44,9 +45,9 @@ export default class Navegacion extends Component {
 
     render() {
         return (
-            <nav className="navbar navbar-expand-lg navbar-dark bg-primary mb-4 p-0">
-                <div className="container">
-                    <Link className="navbar-brand" to="/"><img src="https://www.tec.ac.cr/sites/all/themes/tec/img/logo.svg" alt="logo del TEC" /></Link>
+            <nav className="navbar navbar-expand-lg navbar-light mb-4 p-0">
+                <div className="container p-0">
+                    <Link className="navbar-brand" to={this.state.autenticado ? '/consejos' : '/'}><img className='logo' src={navBrand} alt="logo del TEC" /></Link>
                     <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </button>
