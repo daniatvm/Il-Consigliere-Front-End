@@ -8,7 +8,7 @@ class Auth {
             nombre: '',
             apellido: '',
             enSistema: false
-        }
+        };
     }
 
     setInfo(info) {
@@ -17,11 +17,11 @@ class Auth {
             nombre: info.nombre,
             apellido: info.apellido,
             enSistema: true
-        }
+        };
     }
 
     getInfo() {
-        return this.info
+        return this.info;
     }
 
     cleanInfo() {
@@ -30,7 +30,7 @@ class Auth {
             nombre: '',
             apellido: '',
             enSistema: false
-        }
+        };
     }
 
     isAuthenticated() {
@@ -67,5 +67,5 @@ class Auth {
         }
     }
 }
-
-export default new Auth();
+const auth = new Auth();
+export default auth;

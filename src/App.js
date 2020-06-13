@@ -1,9 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
-import { ProtectedRoute } from './helpers/ProtectedRoutes/ProtectedRoute';
-import { ProtectCouncil } from './helpers/ProtectedRoutes/ProtectCouncil';
-import { ProtectUsers } from './helpers/ProtectedRoutes/ProtectUsers';
 import Acceso from './components/Acceso/Acceso';
 import Inicio from './components/Inicio/Inicio';
 import Consejos from './components/Consejos/Consejos';
@@ -12,20 +9,23 @@ import ListaUsuarios from './components/Usuarios/ListaUsuarios';
 import Registro from './components/Usuarios/Registro';
 import Usuario from './components/Usuarios/Usuario';
 import Cuenta from './components/Cuenta/Cuenta';
+import ProtectedRoute from './helpers/ProtectedRoute';
+import { DefaultComponent } from './helpers/DefaultComponent';
+import { Role } from './helpers/Role';
 
 function App() {
   return (
     <Router>
       <Switch>
-        <ProtectedRoute path='/consejos' component={Consejos} />
-        <ProtectUsers path='/gUsuarios/usuarios' component={ListaUsuarios} />
-        <ProtectUsers path='/gUsuarios/registro' component={Registro} />
-        <ProtectUsers path='/gUsuarios/:usuario' component={Usuario} />
-        <ProtectCouncil path='/gConsejos' component={RegistroConsejos} />
-        <ProtectedRoute path='/cuenta' component={Cuenta} />
         <Route path='/acceso' component={Acceso} />
         <Route exact path='/' component={Inicio} />
-        <Route path='*' component={() => '404 NOT FOUND'} />
+        <ProtectedRoute path='/gUsuarios/usuarios' role={Role.UserModifier} component={ListaUsuarios} />
+        <ProtectedRoute path='/gUsuarios/registro' role={Role.UserModifier} component={Registro} />
+        <ProtectedRoute path='/gUsuarios/:usuario' role={Role.UserModifier} component={Usuario} />
+        <ProtectedRoute path='/gConsejos' role={Role.CouncilModifier} component={RegistroConsejos} />
+        <ProtectedRoute path='/consejos' component={Consejos} />
+        <ProtectedRoute path='/cuenta' component={Cuenta} />
+        <Route path='*' component={DefaultComponent} />
       </Switch>
     </Router>
   );
