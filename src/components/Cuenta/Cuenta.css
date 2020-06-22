@@ -8,19 +8,30 @@
     vertical-align: top;
 }
 
-.my-email{
+.my-email {
     width: 85%;
 }
 
-.my-email2{
+.my-email2 {
     width: 85%;
     text-align: center;
 }
 
-.my-border{
+.my-border {
     border-top: 1px solid #DFD7CA
 }
 
-.my-muted{
+.my-muted {
     color: grey;
+}
+
+.email-container {
+    height: 60vh;
+    overflow: auto;
+}
+
+.my-button {
+    border: none;
+    padding: 0;
+    background: none;
 }

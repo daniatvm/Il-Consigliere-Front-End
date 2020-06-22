@@ -92,8 +92,8 @@ export default class ListaUsuarios extends Component {
                         <td>{nombre}</td>
                         <td>{apellido}</td>
                         <td className='p-1'>
-                            <Link className='btn btn-outline-primary' to={`/gUsuarios/${cedula}`}><i className="far fa-eye"></i></Link>
-                            <button className='btn btn-outline-primary ml-2' onClick={(e) => this.deleteUser(e, cedula, nombre, apellido)}><i className="fas fa-trash-alt"></i></button>
+                            <Link to={`/gUsuarios/${cedula}`}><i className="far fa-eye fa-lg" style={{ color: "navy" }}></i></Link>
+                            <i className='fas fa-trash-alt ml-4 my-icon fa-lg' onClick={(e) => this.deleteUser(e, cedula, nombre, apellido)} />
                         </td>
                     </tr>
                 );

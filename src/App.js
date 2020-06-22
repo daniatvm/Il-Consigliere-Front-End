@@ -10,7 +10,7 @@ import Registro from './components/Usuarios/Registro';
 import Usuario from './components/Usuarios/Usuario';
 import Cuenta from './components/Cuenta/Cuenta';
 import ProtectedRoute from './helpers/ProtectedRoute';
-import { DefaultComponent } from './helpers/DefaultComponent';
+import DefaultComponent from './helpers/DefaultComponent';
 import { Role } from './helpers/Role';
 
 function App() {

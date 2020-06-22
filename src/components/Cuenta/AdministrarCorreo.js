@@ -33,6 +33,11 @@ export default class AdministrarCorreo extends Component {
                                     correos: res.data.emails
                                 });
                             }
+                            else {
+                                this.setState({
+                                    correos: []
+                                })
+                            }
                         })
                         .catch((err) => console.log(err));
                 } else {
@@ -126,9 +131,9 @@ export default class AdministrarCorreo extends Component {
         for (let i = 0; i < this.state.correos.length; i++) {
             const correo = this.state.correos[i].correo;
             emails.push(
-                <div className="d-flex my-div mx-auto my-border" key={i}>
-                    <div className="my-email2 mx-auto">{correo}</div>
-                    <button className='btn btn-outline-primary' onClick={(e) => this.deleteEmail(e, correo)}><i className="fas fa-trash-alt"></i></button>
+                <div className="d-flex my-div mx-auto" key={i}>
+                    <div className="my-email2 mx-auto my-border">{correo}</div>
+                    <i className="fas fa-trash-alt my-icon fa-lg my-auto" onClick={(e) => this.deleteEmail(e, correo)} />
                 </div>
             );
         }
@@ -141,19 +146,24 @@ export default class AdministrarCorreo extends Component {
                 <h3 className="mb-4 text-center">Administración de Correos</h3>
                 <form onSubmit={this.handleSubmit}>
                     <div className="d-flex my-div mx-auto">
-                        <div className="form-group my-email mx-auto">
+                        <div className="form-group my-email m-auto d-block">
                             <input type="email" required maxLength="40" name="correo"
                                 placeholder="Nuevo correo" autoComplete="off" className="form-control"
                                 autoFocus onChange={this.handleInputChange} value={this.state.correo} />
                         </div>
-                        <div className="form-group">
-                            <button type="submit" className="btn btn-outline-primary"><i className="fas fa-save"></i></button>
+                        <div className="form-group my-auto d-block">
+                            <button className="my-button" type="submit"><i className="fas fa-save my-icon fa-lg" /></button>
                         </div>
                     </div>
                 </form>
-                {this.state.correos === 0 &&
-                    <p className="my-muted">No tiene correos registrados</p>}
-                {this.emailsList()}
+                {this.state.correos.length === 0 &&
+                    <div className="my-div mx-auto">
+                        <p className="my-muted">No tiene correos registrados.</p>
+                    </div>
+                }
+                <div className="email-container">
+                    {this.emailsList()}
+                </div>
             </div>
         );
     }
