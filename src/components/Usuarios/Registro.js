@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 import swal from 'sweetalert';
-import Navegacion from '../Navegacion/Navegacion';
-import auth from '../../helpers/auth';
-import { Redirect } from 'react-router-dom';
+import DefaultComponent from '../../helpers/DefaultComponent';
+import loading from '../../assets/loading.gif';
 
 export default class Registro extends Component {
     constructor(props) {
@@ -12,44 +12,53 @@ export default class Registro extends Component {
             cedula: '',
             nombre: '',
             apellido: '',
+            clave: '',
+            confirmacion: '',
+            correo: '',
             permisos: [],
-            gestionarUsuarios: false,
-            gestionarConsejos: false,
-            redirect: false
-        }
+            isLoading: true,
+            invalido: true,
+            registrado: false
+        };
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentDidMount() {
-        auth.verifyToken()
-            .then(value => {
-                if (value) {
-                    axios.get('http://localhost:5000/permiso')
-                        .then(res => {
-                            this.setState({
-                                permisos: res.data.roles
-                            });
-                        })
-                        .catch((err) => console.log(err));
+        const token = this.props.match.params.token;
+        axios.get(`http://localhost:5000/usuario/validar_link/${token}`)
+            .then(res => {
+                if (res.data.success) {
+                    this.setState({
+                        isLoading: false,
+                        invalido: false,
+                        permisos: res.data.permisos
+                    });
                 } else {
                     this.setState({
-                        redirect: true
-                    })
-                    auth.logOut();
+                        isLoading: false,
+                    });
                 }
             })
             .catch((err) => console.log(err));
     }
 
-    getRandom(min, max) {
-        return Math.floor(Math.random() * (max - min)) + min;
+    myAlert(title, text, icon) {
+        this.setState({
+            clave: '',
+            confirmacion: ''
+        });
+        swal({
+            title: title,
+            text: text,
+            icon: icon,
+            button: "Ok"
+        });
     }
 
     handleInputChange(e) {
-        const target = e.target;
         const name = e.target.name;
-        const value = ((name === 'gestionarUsuarios') || (name === 'gestionarConsejos')) ? target.checked : target.value;
+        const value = e.target.value;
         if ((name === 'cedula') && (!Number(value)) && (value !== '')) {
             return;
         }
@@ -60,88 +69,86 @@ export default class Registro extends Component {
 
     handleSubmit(e) {
         e.preventDefault();
-        auth.verifyToken()
-            .then(value => {
-                if (value) {
-                    axios.get(`http://localhost:5000/usuario/${this.state.cedula}`)
-                        .then(res => {
-                            if (!res.data.success) {
-                                const clave = this.getRandom(1000, 9999);
-                                const usuario = {
-                                    cedula: this.state.cedula,
-                                    nombre: this.state.nombre,
-                                    apellido: this.state.apellido,
-                                    clave: clave.toString()
-                                };
-                                axios.post('http://localhost:5000/usuario', usuario)
-                                    .then(async () => {
-                                        if (this.state.gestionarUsuarios) {
-                                            const usuarioPermiso = {
-                                                id_permiso: 1,
-                                                cedula: this.state.cedula
-                                            };
-                                            await axios.post('http://localhost:5000/usuarioPermiso', usuarioPermiso);
-                                        }
-                                        if (this.state.gestionarConsejos) {
-                                            const usuarioPermiso = {
-                                                id_permiso: 2,
-                                                cedula: this.state.cedula
-                                            };
-                                            await axios.post('http://localhost:5000/usuarioPermiso', usuarioPermiso);
-                                        }
-                                        swal({
-                                            title: "Contraseña del usuario",
-                                            text: `La contraseña del nuevo usuario es ${clave}`,
-                                            icon: "info",
-                                            button: "Ok"
-                                        });
-                                        this.props.history.push('/gUsuarios/usuarios');
-                                    })
-                                    .catch((err) => console.log(err));
-                            } else {
-                                swal({
-                                    title: "Este usuario ya existe",
-                                    text: "La cédula de este usuario ya se encuentra en el sistema.",
-                                    icon: "warning",
-                                    button: "Ok",
-                                });
-                            }
-                        })
-                        .catch((err) => console.log(err));
-                } else {
-                    this.setState({
-                        redirect: true
-                    })
-                    auth.logOut();
-                }
-            })
-            .catch((err) => console.log(err));
+        if (this.state.clave === this.state.confirmacion) {
+            const user = {
+                cedula: this.state.cedula,
+                nombre: this.state.nombre,
+                apellido: this.state.apellido,
+                clave: this.state.clave
+            };
+            axios.get(`http://localhost:5000/usuario/${this.state.cedula}`)
+                .then(res => {
+                    if (res.data.success) {
+                        this.myAlert('Atención', 'Ya existe un usuario en el sistema con la cédula proporcionada.', 'warning');
+                    } else {
+                        axios.post('http://localhost:5000/correo/verificar_correo', { correo: this.state.correo })
+                            .then(respo => {
+                                if (!respo.data.taken) {
+                                    axios.post('http://localhost:5000/usuario/', user)
+                                        .then(async resp => {
+                                            if (resp.data.success) {
+                                                try {
+                                                    for (let i = 0; i < this.state.permisos.length; i++) {
+                                                        if (this.state.permisos[i].id_permiso === 1) {
+                                                            await axios.post('http://localhost:5000/usuario_permiso', { cedula: this.state.cedula, id_permiso: 1 });
+                                                        }
+                                                        if (this.state.permisos[i].id_permiso === 2) {
+                                                            await axios.post('http://localhost:5000/usuario_permiso', { cedula: this.state.cedula, id_permiso: 2 });
+                                                        }
+                                                    }
+                                                } catch (err) {
+                                                    console.log(err);
+                                                }
+                                                axios.post(`http://localhost:5000/correo/${this.state.cedula}`, { correo: this.state.correo })
+                                                    .then(respon => {
+                                                        if (respon.data.success) {
+                                                            this.myAlert('Registro Exitoso', 'Ahora puede iniciar sesión y utilizar el sistema.', 'success');
+                                                            this.setState({
+                                                                registrado: true
+                                                            });
+                                                        } else {
+                                                            this.myAlert('Oh no!', 'Error interno del servidor.', 'error');
+                                                        }
+                                                    })
+                                                    .catch((err) => console.log(err));
+                                            } else {
+                                                this.myAlert('Oh no!', 'Error interno del servidor.', 'error');
+                                            }
+                                        })
+                                        .catch((err) => console.log(err));
+                                } else {
+                                    this.myAlert('Atención', 'Ya existe un usuario con este correo en el sistema.', 'warning');
+                                }
+                            })
+                            .catch((err) => console.log(err));
+                    }
+                })
+                .catch((err) => console.log(err));
+        } else {
+            this.myAlert('Atención', 'Las contraseñas no coinciden.', 'warning');
+        }
     }
 
     render() {
-        const checks = [];
-        for (let i = 0; i < this.state.permisos.length; i++) {
-            let name = this.state.permisos[i].nombre;
-            let id = this.state.permisos[i].id_permiso;
-            checks.push(
-                <div className="custom-control custom-checkbox" key={i}>
-                    <input type="checkbox" className="custom-control-input"
-                        id={name} checked={id === 1 ? this.state.gestionarUsuarios : this.state.gestionarConsejos}
-                        onChange={this.handleInputChange} name={name} />
-                    <label className="custom-control-label" htmlFor={name}>
-                        {id === 1 ? 'Gestionar Usuarios' : 'Gestionar Consejos'}
-                    </label>
+        if (this.state.isLoading) {
+            return (
+                <div className="row m-0" style={{ height: '90vh' }}>
+                    <div className="col-sm-12 my-auto">
+                        <img src={loading} className='img-fluid m-auto d-block' style={{ opacity: 0.6 }} alt='logo' />
+                    </div>
                 </div>
             );
-        }
-        return (this.state.redirect ? <Redirect to='/' /> :
-            <>
-                <Navegacion />
-                <div className="row m-0 my-row">
-                    <div className="col-md-4 mx-auto my-auto">
+        } else if (this.state.invalido) {
+            return <DefaultComponent />;
+        } else if (this.state.registrado) {
+            return <Redirect to='/' />
+        } else {
+            return (
+                <div className="row m-0" style={{ height: '100vh' }}>
+                    <div className="col-md-5 m-auto">
                         <div className="card border-primary mb-3">
                             <div className="card-body">
-                                <h4 className="card-title text-center mb-4">Nuevo Usuario</h4>
+                                <h4 className="card-title text-center mb-4">Registro de Usuarios</h4>
                                 <form onSubmit={this.handleSubmit}>
                                     <div className="form-group">
                                         <input type="text" required maxLength="20" name="cedula"
@@ -159,17 +166,32 @@ export default class Registro extends Component {
                                             onChange={this.handleInputChange} value={this.state.apellido} />
                                     </div>
                                     <div className="form-group">
-                                        {checks}
+                                        <input type="email" required maxLength="20" name="correo"
+                                            placeholder="Correo electrónico" className="form-control"
+                                            onChange={this.handleInputChange} value={this.state.correo} />
+                                        <p className='my-muted'>*Escribe el correo al que desea recibir la información de los consejos.</p>
                                     </div>
                                     <div className="form-group">
-                                        <button type="submit" className="btn btn-outline-primary btn-block mt-4">Registrar</button>
+                                        <input type="password" required maxLength="20" name="clave"
+                                            placeholder="Contraseña" className="form-control"
+                                            onChange={this.handleInputChange} value={this.state.clave} />
+                                    </div>
+                                    <div className="form-group">
+                                        <input type="password" required minLength="4" maxLength="20" name="confirmacion"
+                                            placeholder="Confirme contraseña" className="form-control"
+                                            onChange={this.handleInputChange} value={this.state.confirmacion} />
+                                        <p className='my-muted'>*La contraseña debe tener un largo mínimo de 4 caracteres.</p>
+                                    </div>
+                                    <div className="form-group">
+                                        <button type="submit" className="btn btn-outline-primary btn-block mt-4">Registrarme</button>
                                     </div>
                                 </form>
                             </div>
                         </div>
                     </div>
                 </div>
-            </>
-        );
+
+            );
+        }
     }
 }

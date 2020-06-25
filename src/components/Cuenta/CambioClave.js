@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 import swal from 'sweetalert';
 import auth from '../../helpers/auth';
-import { Redirect } from 'react-router-dom';
 
 export default class CambioClave extends Component {
     constructor(props) {
@@ -46,7 +46,7 @@ export default class CambioClave extends Component {
                                             if (res.data.success) {
                                                 this.myAlert('Éxito', 'La contraseña se ha cambiado satisfactoriamente.', 'success');
                                             } else {
-                                                this.myAlert('Inténtelo más tarde', 'Error interno del servidor.', 'error');
+                                                this.myAlert('Oh no!', 'Error interno del servidor.', 'error');
                                             }
                                         })
                                         .catch((err) => console.log(err));

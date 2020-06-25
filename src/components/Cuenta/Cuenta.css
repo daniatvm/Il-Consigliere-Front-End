@@ -21,10 +21,6 @@
     border-top: 1px solid #DFD7CA
 }
 
-.my-muted {
-    color: grey;
-}
-
 .email-container {
     height: 60vh;
     overflow: auto;

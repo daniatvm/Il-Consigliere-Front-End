@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 import swal from 'sweetalert';
 import auth from '../../helpers/auth';
-import { Redirect } from 'react-router-dom';
 
 export default class AdministrarCorreo extends Component {
     constructor(props) {

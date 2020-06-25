@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
+import { Redirect, Link } from 'react-router-dom';
+import axios from 'axios';
 import Navegacion from '../Navegacion/Navegacion';
 import auth from '../../helpers/auth';
-import axios from 'axios';
-import { Redirect, Link } from 'react-router-dom';
 import './Usuario.css';
 
 export default class Usuario extends Component {
@@ -97,20 +97,24 @@ export default class Usuario extends Component {
 
     async handleSubmit(e) {
         e.preventDefault();
-        await axios.delete(`http://localhost:5000/usuarioPermiso/${this.state.cedula}`);
-        if (this.state.gestionarUsuarios) {
-            const usuarioPermiso = {
-                id_permiso: 1,
-                cedula: this.state.cedula
-            };
-            await axios.post('http://localhost:5000/usuarioPermiso', usuarioPermiso);
-        }
-        if (this.state.gestionarConsejos) {
-            const usuarioPermiso = {
-                id_permiso: 2,
-                cedula: this.state.cedula
-            };
-            await axios.post('http://localhost:5000/usuarioPermiso', usuarioPermiso);
+        try {
+            await axios.delete(`http://localhost:5000/usuario_permiso/${this.state.cedula}`);
+            if (this.state.gestionarUsuarios) {
+                const usuarioPermiso = {
+                    id_permiso: 1,
+                    cedula: this.state.cedula
+                };
+                await axios.post('http://localhost:5000/usuario_permiso', usuarioPermiso);
+            }
+            if (this.state.gestionarConsejos) {
+                const usuarioPermiso = {
+                    id_permiso: 2,
+                    cedula: this.state.cedula
+                };
+                await axios.post('http://localhost:5000/usuario_permiso', usuarioPermiso);
+            }
+        } catch (err) {
+            console.log(err);
         }
         this.props.history.push('/gUsuarios/usuarios');
     }

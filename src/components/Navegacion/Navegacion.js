@@ -64,7 +64,7 @@ export default class Navegacion extends Component {
                                             role="button" aria-haspopup="true" aria-expanded="false">Gestión de Usuarios</NavLink>
                                         <div className="dropdown-menu">
                                             <NavLink className="dropdown-item" activeClassName="active" exact to="/gUsuarios/usuarios">Lista de Usuarios</NavLink>
-                                            <NavLink className="dropdown-item" activeClassName="active" exact to="/gUsuarios/registro">Registro de Usuarios</NavLink>
+                                            <NavLink className="dropdown-item" activeClassName="active" exact to="/gUsuarios/invitar">Invitar Usuario</NavLink>
                                         </div>
                                     </li>
                                 }

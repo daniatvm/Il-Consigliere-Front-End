@@ -1,11 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans&display=swap');
 body {
-    background: #ADA996 !important;
-    /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, #EAEAEA, #DBDBDB, #F2F2F2, #ADA996) !important;
-    /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right, #EAEAEA, #DBDBDB, #F2F2F2, #ADA996) !important;
-    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: rgb(218, 203, 240);
+    background: -moz-linear-gradient(90deg, rgba(218, 203, 240, 1) 0%, rgba(219, 222, 223, 1) 58%, rgba(239, 239, 240, 1) 100%);
+    background: -webkit-linear-gradient(90deg, rgba(218, 203, 240, 1) 0%, rgba(219, 222, 223, 1) 58%, rgba(239, 239, 240, 1) 100%);
+    background: linear-gradient(90deg, rgba(218, 203, 240, 1) 0%, rgba(219, 222, 223, 1) 58%, rgba(239, 239, 240, 1) 100%);
+    filter: progid: DXImageTransform.Microsoft.gradient(startColorstr="#dacbf0", endColorstr="#efeff0", GradientType=1);
     font-family: 'Nunito Sans', sans-serif !important;
 }
 
@@ -29,7 +28,11 @@ h4 {
     text-transform: uppercase;
 }
 
-.my-icon{
+.my-icon {
     cursor: pointer;
     color: navy;
+}
+
+.my-muted {
+    color: grey;
 }

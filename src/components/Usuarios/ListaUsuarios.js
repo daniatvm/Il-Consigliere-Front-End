@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import Navegacion from '../Navegacion/Navegacion';
+import { Redirect, Link } from 'react-router-dom';
 import axios from 'axios';
 import swal from 'sweetalert';
+import Navegacion from '../Navegacion/Navegacion';
 import auth from '../../helpers/auth';
 import './ListaUsuarios.css';
-import { Redirect, Link } from 'react-router-dom';
 
 export default class ListaUsuarios extends Component {
     constructor(props) {
@@ -26,9 +26,11 @@ export default class ListaUsuarios extends Component {
                 if (value) {
                     axios.get('http://localhost:5000/usuario/')
                         .then(res => {
-                            this.setState({
-                                usuarios: res.data.users
-                            });
+                            if(res.data.success){
+                                this.setState({
+                                    usuarios: res.data.users
+                                });
+                            }
                         })
                         .catch((err) => console.log(err));
                 } else {
@@ -55,7 +57,7 @@ export default class ListaUsuarios extends Component {
                     })
                         .then((willDelete) => {
                             if (willDelete) {
-                                axios.delete(`http://localhost:5000/usuarioPermiso/${cedula}`)
+                                axios.delete(`http://localhost:5000/usuario_permiso/${cedula}`)
                                     .then(() => {
                                         axios.delete(`http://localhost:5000/correo/${cedula}`)
                                             .then(() => {
