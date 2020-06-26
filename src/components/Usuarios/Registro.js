@@ -26,7 +26,7 @@ export default class Registro extends Component {
 
     componentDidMount() {
         const token = this.props.match.params.token;
-        axios.get(`http://localhost:5000/usuario/validar_link/${token}`)
+        axios.get(`/usuario/validar_link/${token}`)
             .then(res => {
                 if (res.data.success) {
                     this.setState({
@@ -76,30 +76,30 @@ export default class Registro extends Component {
                 apellido: this.state.apellido,
                 clave: this.state.clave
             };
-            axios.get(`http://localhost:5000/usuario/${this.state.cedula}`)
+            axios.get(`/usuario/${this.state.cedula}`)
                 .then(res => {
                     if (res.data.success) {
                         this.myAlert('Atención', 'Ya existe un usuario en el sistema con la cédula proporcionada.', 'warning');
                     } else {
-                        axios.post('http://localhost:5000/correo/verificar_correo', { correo: this.state.correo })
+                        axios.post('/correo/verificar_correo', { correo: this.state.correo })
                             .then(respo => {
                                 if (!respo.data.taken) {
-                                    axios.post('http://localhost:5000/usuario/', user)
+                                    axios.post('/usuario/', user)
                                         .then(async resp => {
                                             if (resp.data.success) {
                                                 try {
                                                     for (let i = 0; i < this.state.permisos.length; i++) {
                                                         if (this.state.permisos[i].id_permiso === 1) {
-                                                            await axios.post('http://localhost:5000/usuario_permiso', { cedula: this.state.cedula, id_permiso: 1 });
+                                                            await axios.post('/usuario_permiso', { cedula: this.state.cedula, id_permiso: 1 });
                                                         }
                                                         if (this.state.permisos[i].id_permiso === 2) {
-                                                            await axios.post('http://localhost:5000/usuario_permiso', { cedula: this.state.cedula, id_permiso: 2 });
+                                                            await axios.post('/usuario_permiso', { cedula: this.state.cedula, id_permiso: 2 });
                                                         }
                                                     }
                                                 } catch (err) {
                                                     console.log(err);
                                                 }
-                                                axios.post(`http://localhost:5000/correo/${this.state.cedula}`, { correo: this.state.correo })
+                                                axios.post(`/correo/${this.state.cedula}`, { correo: this.state.correo })
                                                     .then(respon => {
                                                         if (respon.data.success) {
                                                             this.myAlert('Registro Exitoso', 'Ahora puede iniciar sesión y utilizar el sistema.', 'success');

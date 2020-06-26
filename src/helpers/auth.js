@@ -52,7 +52,7 @@ class Auth {
                     authorization: token
                 }
             }
-            const res = await axios.post('http://localhost:5000/usuario/verificar_token', null, header);
+            const res = await axios.post('/usuario/verificar_token', null, header);
             if (res.data.success) {
                 const user = res.data.token.user;
                 this.setInfo(user);

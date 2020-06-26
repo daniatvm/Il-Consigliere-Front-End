@@ -23,7 +23,7 @@ export default class InvitarUsuario extends Component {
         auth.verifyToken()
             .then(value => {
                 if (value) {
-                    axios.get('http://localhost:5000/permiso')
+                    axios.get('/permiso')
                         .then(res => {
                             if (res.data.success) {
                                 this.setState({
@@ -83,7 +83,7 @@ export default class InvitarUsuario extends Component {
                     } else {
                         info.permisos = []
                     }
-                    axios.post('http://localhost:5000/usuario/enviar_link/', info)
+                    axios.post('/usuario/enviar_link/', info)
                         .then(resp => {
                             if (resp.data.success) {
                                 this.myAlert("Invitación Exitosa", `Se ha enviado un link con la invitación de registro a ${this.state.correo}`, "success");

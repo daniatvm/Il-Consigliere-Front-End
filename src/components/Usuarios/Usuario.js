@@ -27,7 +27,7 @@ export default class Usuario extends Component {
         auth.verifyToken()
             .then(value => {
                 if (value) {
-                    axios.get(`http://localhost:5000/usuario/${this.state.cedula}`)
+                    axios.get(`/usuario/${this.state.cedula}`)
                         .then(user => {
                             if (user.data.success) {
                                 const usuario = user.data.user;
@@ -36,14 +36,14 @@ export default class Usuario extends Component {
                                     apellido: usuario.apellido
                                 });
                             }
-                            axios.get(`http://localhost:5000/correo/${this.state.cedula}`)
+                            axios.get(`/correo/${this.state.cedula}`)
                                 .then(emails => {
                                     if (emails.data.success) {
                                         this.setState({
                                             correos: emails.data.emails
                                         });
                                     }
-                                    axios.get(`http://localhost:5000/usuario/permisos/${this.state.cedula}`)
+                                    axios.get(`/usuario/permisos/${this.state.cedula}`)
                                         .then(roles => {
                                             if (roles.data.success) {
                                                 this.setState({
@@ -62,7 +62,7 @@ export default class Usuario extends Component {
                                                     });
                                                 }
                                             }
-                                            axios.get('http://localhost:5000/permiso')
+                                            axios.get('/permiso')
                                                 .then(roles => {
                                                     if (roles.data.success) {
                                                         this.setState({
@@ -98,20 +98,20 @@ export default class Usuario extends Component {
     async handleSubmit(e) {
         e.preventDefault();
         try {
-            await axios.delete(`http://localhost:5000/usuario_permiso/${this.state.cedula}`);
+            await axios.delete(`/usuario_permiso/${this.state.cedula}`);
             if (this.state.gestionarUsuarios) {
                 const usuarioPermiso = {
                     id_permiso: 1,
                     cedula: this.state.cedula
                 };
-                await axios.post('http://localhost:5000/usuario_permiso', usuarioPermiso);
+                await axios.post('/usuario_permiso', usuarioPermiso);
             }
             if (this.state.gestionarConsejos) {
                 const usuarioPermiso = {
                     id_permiso: 2,
                     cedula: this.state.cedula
                 };
-                await axios.post('http://localhost:5000/usuario_permiso', usuarioPermiso);
+                await axios.post('/usuario_permiso', usuarioPermiso);
             }
         } catch (err) {
             console.log(err);

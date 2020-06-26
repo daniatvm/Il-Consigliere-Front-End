@@ -24,7 +24,7 @@ export default class ListaUsuarios extends Component {
         auth.verifyToken()
             .then(value => {
                 if (value) {
-                    axios.get('http://localhost:5000/usuario/')
+                    axios.get('/usuario/')
                         .then(res => {
                             if(res.data.success){
                                 this.setState({
@@ -57,11 +57,11 @@ export default class ListaUsuarios extends Component {
                     })
                         .then((willDelete) => {
                             if (willDelete) {
-                                axios.delete(`http://localhost:5000/usuario_permiso/${cedula}`)
+                                axios.delete(`/usuario_permiso/${cedula}`)
                                     .then(() => {
-                                        axios.delete(`http://localhost:5000/correo/${cedula}`)
+                                        axios.delete(`/correo/${cedula}`)
                                             .then(() => {
-                                                axios.delete(`http://localhost:5000/usuario/${cedula}`)
+                                                axios.delete(`/usuario/${cedula}`)
                                                     .then(() => {
                                                         this.getUsers();
                                                     })

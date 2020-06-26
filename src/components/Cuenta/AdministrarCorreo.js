@@ -26,7 +26,7 @@ export default class AdministrarCorreo extends Component {
             .then(value => {
                 if (value) {
                     const cedula = auth.getInfo().cedula;
-                    axios.get(`http://localhost:5000/correo/${cedula}`)
+                    axios.get(`/correo/${cedula}`)
                         .then(res => {
                             if (res.data.success) {
                                 this.setState({
@@ -72,7 +72,7 @@ export default class AdministrarCorreo extends Component {
                     })
                         .then((willDelete) => {
                             if (willDelete) {
-                                axios.delete('http://localhost:5000/correo', { data: { correo: email } })
+                                axios.delete('/correo', { data: { correo: email } })
                                     .then(() => {
                                         this.getEmails();
                                     })
@@ -94,11 +94,11 @@ export default class AdministrarCorreo extends Component {
         auth.verifyToken()
             .then(value => {
                 if (value) {
-                    axios.post('http://localhost:5000/correo/verificar_correo', { correo: this.state.correo })
+                    axios.post('/correo/verificar_correo', { correo: this.state.correo })
                         .then(res => {
                             if (!res.data.taken) {
                                 const cedula = auth.getInfo().cedula;
-                                axios.post(`http://localhost:5000/correo/${cedula}`, { correo: this.state.correo })
+                                axios.post(`/correo/${cedula}`, { correo: this.state.correo })
                                     .then(() => {
                                         this.getEmails()
                                         this.setState({

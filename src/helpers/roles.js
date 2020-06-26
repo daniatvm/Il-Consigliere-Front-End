@@ -42,7 +42,7 @@ class Roles {
             if (user.cedula === '') {
                 this.roles = [];
             } else {
-                const roles = await axios.get(`http://localhost:5000/usuario/permisos/${user.cedula}`);
+                const roles = await axios.get(`/usuario/permisos/${user.cedula}`);
                 if (roles.data.success) {
                     this.setRoles(roles.data.roles);
                 } else {

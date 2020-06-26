@@ -52,7 +52,7 @@ export default class Acceso extends Component {
             cedula: this.state.cedula,
             clave: this.state.clave
         };
-        axios.post('http://localhost:5000/usuario/inicio_sesion', usuario)
+        axios.post('/usuario/inicio_sesion', usuario)
             .then(res => {
                 if (res.data.success) {
                     localStorage.setItem('il-consigliere', JSON.stringify({
