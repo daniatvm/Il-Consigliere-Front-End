@@ -8,7 +8,6 @@ import RegistroConsejos from './components/Consejos/RegistroConsejos';
 import ListaUsuarios from './components/Usuarios/ListaUsuarios';
 import Registro from './components/Usuarios/Registro';
 import Usuario from './components/Usuarios/Usuario';
-import InvitarUsuario from './components/Usuarios/InvitarUsuario';
 import Cuenta from './components/Cuenta/Cuenta';
 import ProtectedRoute from './helpers/ProtectedRoute';
 import DefaultComponent from './helpers/DefaultComponent';
@@ -22,7 +21,6 @@ function App() {
         <Route exact path='/' component={Inicio} />
         <Route path='/gUsuarios/registro/:token' component={Registro} />
         <ProtectedRoute path='/gUsuarios/usuarios' role={Role.UserModifier} component={ListaUsuarios} />
-        <ProtectedRoute path='/gUsuarios/invitar' role={Role.UserModifier} component={InvitarUsuario} />
         <ProtectedRoute path='/gUsuarios/:usuario' role={Role.UserModifier} component={Usuario} />
         <ProtectedRoute path='/gConsejos' role={Role.CouncilModifier} component={RegistroConsejos} />
         <ProtectedRoute path='/consejos' component={Consejos} />

@@ -166,7 +166,7 @@ export default class Usuario extends Component {
                                     </div>
                                     <div className="form-group d-flex justify-content-around">
                                         <button type="submit" className="btn btn-outline-primary my-width mt-2">Guardar Cambios</button>
-                                        <Link to='/gUsuarios/usuarios' className="btn btn-outline-primary my-width mt-2">Cancelar</Link>
+                                        <Link to='/gUsuarios/usuarios' className="btn btn-outline-secondary my-width mt-2">Cancelar</Link>
                                     </div>
                                 </form>
                             </div>

@@ -38,10 +38,7 @@ export default class CambioClave extends Component {
                         axios.post('/usuario/verificar_clave', user)
                             .then(res => {
                                 if (res.data.success) {
-                                    const pass = {
-                                        clave: this.state.nueva
-                                    }
-                                    axios.post(`/usuario/cambiar_clave/${user.cedula}`, pass)
+                                    axios.post('/usuario/cambiar_clave', { clave: this.state.nueva, cedula: auth.getInfo.cedula })
                                         .then(res => {
                                             if (res.data.success) {
                                                 this.myAlert('Éxito', 'La contraseña se ha cambiado satisfactoriamente.', 'success');
@@ -91,7 +88,7 @@ export default class CambioClave extends Component {
                     <div className="form-group">
                         <input type="password" required maxLength="20" name="actual"
                             placeholder="Contraseña actual" className="form-control"
-                            onChange={this.handleInputChange} value={this.state.actual} />
+                            autoFocus onChange={this.handleInputChange} value={this.state.actual} />
                     </div>
                     <div className="form-group">
                         <input type="password" required minLength="4" maxLength="20" name="nueva"

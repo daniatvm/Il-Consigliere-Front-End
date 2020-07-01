@@ -142,14 +142,14 @@ export default class AdministrarCorreo extends Component {
 
     render() {
         return (this.state.redirect ? <Redirect to='/' /> :
-            <div className="container">
+            <div className="container especial">
                 <h3 className="mb-4 text-center">Administración de Correos</h3>
                 <form onSubmit={this.handleSubmit}>
                     <div className="d-flex my-div mx-auto">
                         <div className="form-group my-email m-auto d-block">
                             <input type="email" required maxLength="40" name="correo"
                                 placeholder="Nuevo correo" autoComplete="off" className="form-control"
-                                autoFocus onChange={this.handleInputChange} value={this.state.correo} />
+                                onChange={this.handleInputChange} value={this.state.correo} />
                         </div>
                         <div className="form-group my-auto d-block">
                             <button className="my-button" type="submit"><i className="fas fa-save my-icon fa-lg" /></button>

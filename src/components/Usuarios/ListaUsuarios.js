@@ -5,6 +5,7 @@ import swal from 'sweetalert';
 import Navegacion from '../Navegacion/Navegacion';
 import auth from '../../helpers/auth';
 import './ListaUsuarios.css';
+import InvitarUsuario from './InvitarUsuario';
 
 export default class ListaUsuarios extends Component {
     constructor(props) {
@@ -26,7 +27,7 @@ export default class ListaUsuarios extends Component {
                 if (value) {
                     axios.get('/usuario/')
                         .then(res => {
-                            if(res.data.success){
+                            if (res.data.success) {
                                 this.setState({
                                     usuarios: res.data.users
                                 });
@@ -109,7 +110,10 @@ export default class ListaUsuarios extends Component {
             <>
                 <Navegacion />
                 <div className="container">
-                    <h3 className="mb-4">Lista de Usuarios</h3>
+                    <div className="d-flex justify-content-between">
+                        <h3 className="mb-4">Lista de Usuarios</h3>
+                        <InvitarUsuario />
+                    </div>
                     {this.state.usuarios.length === 1 &&
                         <p className="my-muted">No hay más usuarios en el sistema.</p>}
                     <table className="table m-auto">

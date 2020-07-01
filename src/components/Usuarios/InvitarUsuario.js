@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
-import Navegacion from '../Navegacion/Navegacion';
 import axios from 'axios';
 import swal from 'sweetalert';
 import auth from '../../helpers/auth';
+import './InvitarUsuario.css';
+import { Redirect } from 'react-router-dom';
+import $ from 'jquery';
+import 'bootstrap';
 
 export default class InvitarUsuario extends Component {
     constructor(props) {
@@ -17,6 +20,7 @@ export default class InvitarUsuario extends Component {
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.button = React.createRef();
+        this.input = React.createRef();
     }
 
     componentDidMount() {
@@ -90,7 +94,7 @@ export default class InvitarUsuario extends Component {
                             } else {
                                 this.myAlert("Oh no!", "Error interno del servidor.", "error");
                             }
-                            this.props.history.push('/gUsuarios/usuarios');
+                            $('#invitar').modal('hide');
                         })
                         .catch((err) => console.log(err));
                 } else {
@@ -119,26 +123,29 @@ export default class InvitarUsuario extends Component {
                 </div>
             );
         }
-        return (
+        return (this.state.redirect ? <Redirect to='/' /> :
             <>
-                <Navegacion />
-                <div className="row m-0 my-row" style={{ height: '70vh' }}>
-                    <div className="col-md-5 m-auto">
-                        <div className="card border-primary mb-3">
-                            <div className="card-body">
-                                <h4 className="card-title text-center mb-4">Invita a un Usuario</h4>
+                <button type="button" className="btn btn-outline-primary py-0" data-toggle="modal" data-target="#invitar" style={{ height: "30px" }}>
+                    Invita a un usuario
+                </button>
+                <div className="modal fade" id="invitar" role="dialog">
+                    <div className="modal-dialog modal-dialog-centered" role="document">
+                        <div className="modal-content modal-border">
+                            <div className="modal-body">
+                                <h3 className="modal-title text-center mb-4">Invitación</h3>
                                 <form onSubmit={this.handleSubmit}>
                                     <div className="form-group">
                                         <input type="email" required maxLength="20" name="correo"
                                             placeholder="Correo electrónico" autoComplete="off" className="form-control"
-                                            autoFocus onChange={this.handleInputChange} value={this.state.correo} />
+                                            ref={this.input} onChange={this.handleInputChange} value={this.state.correo} />
                                     </div>
                                     <div className="form-group">
                                         <p className="lead">Permisos que le desea asociar:</p>
                                         {checks}
                                     </div>
-                                    <div className="form-group">
-                                        <button ref={this.button} type="submit" className="btn btn-outline-primary btn-block mt-4">Invitar</button>
+                                    <div className="form-group d-flex justify-content-around">
+                                        <button ref={this.button} type="submit" className="btn btn-outline-primary mt-4 my-size">Invitar</button>
+                                        <button type="button" className="btn btn-outline-secondary my-size mt-4" data-dismiss="modal">Cancelar</button>
                                     </div>
                                 </form>
                             </div>
@@ -146,6 +153,6 @@ export default class InvitarUsuario extends Component {
                     </div>
                 </div>
             </>
-        );
+        )
     }
 }

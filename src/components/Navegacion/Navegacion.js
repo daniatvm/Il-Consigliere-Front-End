@@ -59,13 +59,15 @@ export default class Navegacion extends Component {
                                     <NavLink className="nav-link text" activeClassName="active" exact to="/consejos">Mis Consejos</NavLink>
                                 </li>
                                 {this.state.gestUsuario &&
-                                    <li className="nav-item dropdown">
-                                        <NavLink className="nav-link dropdown-toggle text" data-toggle="dropdown" to="/gUsuarios"
-                                            role="button" aria-haspopup="true" aria-expanded="false">Gestión de Usuarios</NavLink>
-                                        <div className="dropdown-menu">
-                                            <NavLink className="dropdown-item" activeClassName="active" exact to="/gUsuarios/usuarios">Lista de Usuarios</NavLink>
-                                            <NavLink className="dropdown-item" activeClassName="active" exact to="/gUsuarios/invitar">Invitar Usuario</NavLink>
-                                        </div>
+                                    // <li className="nav-item dropdown">
+                                    //     <NavLink className="nav-link dropdown-toggle text" data-toggle="dropdown" to="/gUsuarios"
+                                    //         role="button" aria-haspopup="true" aria-expanded="false">Gestión de Usuarios</NavLink>
+                                    //     <div className="dropdown-menu">
+                                    //         <NavLink className="dropdown-item" activeClassName="active" exact to="/gUsuarios/usuarios">Lista de Usuarios</NavLink>
+                                    //     </div>
+                                    // </li>
+                                    <li className="nav-item">
+                                        <NavLink className="nav-link text" activeClassName="active" exact to="/gUsuarios/usuarios">Gestión de Usuarios</NavLink>
                                     </li>
                                 }
                                 {this.state.gestConsejo &&

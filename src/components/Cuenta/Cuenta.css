@@ -18,7 +18,7 @@
 }
 
 .my-border {
-    border-top: 1px solid #DFD7CA
+    border-top: 1px solid #DFD7CA;
 }
 
 .email-container {
@@ -30,4 +30,10 @@
     border: none;
     padding: 0;
     background: none;
+}
+
+@media only screen and (max-width: 768px) {
+    .especial {
+        margin-top: 40px;
+    }
 }

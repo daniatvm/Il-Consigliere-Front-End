@@ -81,46 +81,46 @@ export default class Registro extends Component {
                     if (res.data.success) {
                         this.myAlert('Atención', 'Ya existe un usuario en el sistema con la cédula proporcionada.', 'warning');
                     } else {
-                        axios.post('/correo/verificar_correo', { correo: this.state.correo })
-                            .then(respo => {
-                                if (!respo.data.taken) {
-                                    axios.post('/usuario/', user)
-                                        .then(async resp => {
-                                            if (resp.data.success) {
-                                                try {
-                                                    for (let i = 0; i < this.state.permisos.length; i++) {
-                                                        if (this.state.permisos[i].id_permiso === 1) {
-                                                            await axios.post('/usuario_permiso', { cedula: this.state.cedula, id_permiso: 1 });
-                                                        }
-                                                        if (this.state.permisos[i].id_permiso === 2) {
-                                                            await axios.post('/usuario_permiso', { cedula: this.state.cedula, id_permiso: 2 });
-                                                        }
-                                                    }
-                                                } catch (err) {
-                                                    console.log(err);
-                                                }
-                                                axios.post(`/correo/${this.state.cedula}`, { correo: this.state.correo })
-                                                    .then(respon => {
-                                                        if (respon.data.success) {
-                                                            this.myAlert('Registro Exitoso', 'Ahora puede iniciar sesión y utilizar el sistema.', 'success');
-                                                            this.setState({
-                                                                registrado: true
-                                                            });
-                                                        } else {
-                                                            this.myAlert('Oh no!', 'Error interno del servidor.', 'error');
-                                                        }
-                                                    })
-                                                    .catch((err) => console.log(err));
-                                            } else {
-                                                this.myAlert('Oh no!', 'Error interno del servidor.', 'error');
+                        // axios.post('/correo/verificar_correo', { correo: this.state.correo })
+                        // .then(respo => {
+                        //     if (!respo.data.taken) {
+                        axios.post('/usuario/', user)
+                            .then(async resp => {
+                                if (resp.data.success) {
+                                    try {
+                                        for (let i = 0; i < this.state.permisos.length; i++) {
+                                            if (this.state.permisos[i].id_permiso === 1) {
+                                                await axios.post('/usuario_permiso', { cedula: this.state.cedula, id_permiso: 1 });
                                             }
-                                        })
-                                        .catch((err) => console.log(err));
+                                            if (this.state.permisos[i].id_permiso === 2) {
+                                                await axios.post('/usuario_permiso', { cedula: this.state.cedula, id_permiso: 2 });
+                                            }
+                                        }
+                                    } catch (err) {
+                                        console.log(err);
+                                    }
+                                    // axios.post(`/correo/${this.state.cedula}`, { correo: this.state.correo })
+                                    //     .then(respon => {
+                                    //         if (respon.data.success) {
+                                    this.myAlert('Registro Exitoso', 'Ahora puede iniciar sesión y utilizar el sistema.', 'success');
+                                    this.setState({
+                                        registrado: true
+                                    });
+                                    // } else {
+                                    //     this.myAlert('Oh no!', 'Error interno del servidor.', 'error');
+                                    // }
+                                    // })
+                                    // .catch((err) => console.log(err));
                                 } else {
-                                    this.myAlert('Atención', 'Ya existe un usuario con este correo en el sistema.', 'warning');
+                                    this.myAlert('Oh no!', 'Error interno del servidor.', 'error');
                                 }
                             })
                             .catch((err) => console.log(err));
+                        // } else {
+                        //     this.myAlert('Atención', 'Ya existe un usuario con este correo en el sistema.', 'warning');
+                        // }
+                        // })
+                        // .catch((err) => console.log(err));
                     }
                 })
                 .catch((err) => console.log(err));
@@ -165,12 +165,12 @@ export default class Registro extends Component {
                                             placeholder="Apellido" className="form-control"
                                             onChange={this.handleInputChange} value={this.state.apellido} />
                                     </div>
-                                    <div className="form-group">
+                                    {/* <div className="form-group">
                                         <input type="email" required maxLength="20" name="correo"
                                             placeholder="Correo electrónico" className="form-control"
                                             onChange={this.handleInputChange} value={this.state.correo} />
                                         <p className='my-muted'>*Escribe el correo al que desea recibir la información de los consejos.</p>
-                                    </div>
+                                    </div> */}
                                     <div className="form-group">
                                         <input type="password" required maxLength="20" name="clave"
                                             placeholder="Contraseña" className="form-control"
