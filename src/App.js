@@ -5,6 +5,7 @@ import Acceso from './components/Acceso/Acceso';
 import Inicio from './components/Inicio/Inicio';
 import Consejos from './components/Consejos/Consejos';
 import RegistroConsejos from './components/Consejos/RegistroConsejos';
+import Punto from './components/Punto/Punto';
 import ListaUsuarios from './components/Usuarios/ListaUsuarios';
 import Registro from './components/Usuarios/Registro';
 import Usuario from './components/Usuarios/Usuario';
@@ -23,6 +24,7 @@ function App() {
         <ProtectedRoute path='/gUsuarios/usuarios' role={Role.UserModifier} component={ListaUsuarios} />
         <ProtectedRoute path='/gUsuarios/:usuario' role={Role.UserModifier} component={Usuario} />
         <ProtectedRoute path='/gConsejos' role={Role.CouncilModifier} component={RegistroConsejos} />
+        <ProtectedRoute path='gConsejos/:consejos' role={Role.CouncilModifier} component={Punto} />
         <ProtectedRoute path='/consejos' component={Consejos} />
         <ProtectedRoute path='/cuenta' component={Cuenta} />
         <Route path='*' component={DefaultComponent} />

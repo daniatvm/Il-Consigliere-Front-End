@@ -1,0 +1,46 @@
+.consejo-card {
+    width: inherit;
+}
+
+.registro-container {
+    width: 50%;
+}
+
+.punto-container {
+    height: 32vh;
+    overflow: auto;
+}
+
+.todo-registro {
+    display: flex;
+}
+
+.consejo-button {
+    width: 35vw;
+}
+
+.izq {
+    margin-right: 16px;
+}
+
+.der {
+    margin-left: 16px;
+}
+
+@media only screen and (max-width: 760px) {
+    .todo-registro {
+        display: block;
+    }
+    .registro-container {
+        width: 100%;
+    }
+    .consejo-button {
+        width: auto;
+    }
+    .izq {
+        margin: 0;
+    }
+    .der {
+        margin: 0;
+    }
+}
