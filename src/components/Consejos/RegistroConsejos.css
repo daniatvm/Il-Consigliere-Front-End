@@ -27,6 +27,11 @@
     margin-left: 16px;
 }
 
+.solicitud-container {
+    height: 15vh;
+    overflow: auto;
+}
+
 @media only screen and (max-width: 760px) {
     .todo-registro {
         display: block;

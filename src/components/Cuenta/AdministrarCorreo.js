@@ -130,7 +130,7 @@ export default class AdministrarCorreo extends Component {
       const correo = this.state.correos[i].correo;
       emails.push(
         <div className="d-flex my-div mx-auto" key={i}>
-          <div className="my-email2 mx-auto my-border">{correo}</div>
+          <div className="my-email2 mx-auto special-border">{correo}</div>
           <i className="fas fa-trash-alt my-icon fa-lg my-auto" onClick={(e) => this.deleteEmail(e, correo)} />
         </div>
       );

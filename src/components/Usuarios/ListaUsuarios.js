@@ -91,12 +91,12 @@ export default class ListaUsuarios extends Component {
       if (cedula !== auth.getInfo().cedula) {
         tableRows.push(
           <tr key={i}>
-            <td>{cedula}</td>
-            <td>{nombre}</td>
-            <td>{apellido}</td>
-            <td className='p-1'>
-              <Link to={`/gUsuarios/${cedula}`}><i className="far fa-eye fa-lg" style={{ color: "navy" }}></i></Link>
-              <i className='fas fa-trash-alt ml-4 my-icon fa-lg' onClick={(e) => this.deleteUser(e, cedula, nombre, apellido)} />
+            <td className='special-border align-middle'>{cedula}</td>
+            <td className='special-border align-middle'>{nombre}</td>
+            <td className='special-border align-middle'>{apellido}</td>
+            <td className='special-border align-middle'>
+              <Link to={`/gUsuarios/${cedula}`}><i className="far fa-eye fa-lg mr-4" style={{ color: "navy" }}></i></Link>
+              <i className='fas fa-trash-alt my-icon fa-lg' onClick={(e) => this.deleteUser(e, cedula, nombre, apellido)} />
             </td>
           </tr>
         );

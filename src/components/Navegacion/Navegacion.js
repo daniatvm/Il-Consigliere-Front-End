@@ -56,24 +56,25 @@ export default class Navegacion extends Component {
             {this.state.autenticado ?
               <ul className="navbar-nav ml-auto">
                 <li className="nav-item">
-                  <NavLink className="nav-link text" activeClassName="active" exact to="/consejos">Mis Consejos</NavLink>
+                  <NavLink className="nav-link text" activeClassName="active" to="/consejos">Mis Consejos</NavLink>
                 </li>
                 {this.state.gestUsuario &&
-                  // <li className="nav-item dropdown">
-                  //     <NavLink className="nav-link dropdown-toggle text" data-toggle="dropdown" to="/gUsuarios"
-                  //         role="button" aria-haspopup="true" aria-expanded="false">Gestión de Usuarios</NavLink>
-                  //     <div className="dropdown-menu">
-                  //         <NavLink className="dropdown-item" activeClassName="active" exact to="/gUsuarios/usuarios">Lista de Usuarios</NavLink>
-                  //     </div>
-                  // </li>
                   <li className="nav-item">
-                    <NavLink className="nav-link text" activeClassName="active" exact to="/gUsuarios/usuarios">Gestión de Usuarios</NavLink>
+                    <NavLink className="nav-link text" activeClassName="active" to="/gUsuarios">Gestión de Usuarios</NavLink>
                   </li>
                 }
                 {this.state.gestConsejo &&
-                  <li className="nav-item">
-                    <NavLink className="nav-link text" activeClassName="active" exact to="/gConsejos">Gestión de Consejos</NavLink>
+                  <li className="nav-item dropdown">
+                    <NavLink className="nav-link dropdown-toggle text" data-toggle="dropdown" to="/gConsejos"
+                      role="button" aria-haspopup="true" aria-expanded="false">Gestión de Consejos</NavLink>
+                    <div className="dropdown-menu">
+                      <NavLink className="dropdown-item" activeClassName="active" exact to="/gConsejos">Todos los Consejos</NavLink>
+                      <NavLink className="dropdown-item" activeClassName="active" exact to="/gConsejos/registro">Nuevo Consejo</NavLink>
+                    </div>
                   </li>
+                  // <li className="nav-item">
+                  //   <NavLink className="nav-link text" activeClassName="active" exact to="/gConsejos">Gestión de Consejos</NavLink>
+                  // </li>
                 }
                 <li className="nav-item">
                   <NavLink className="nav-link text" activeClassName="active" exact to="/cuenta" onClick={this.verifyToken}>Mi Cuenta</NavLink>

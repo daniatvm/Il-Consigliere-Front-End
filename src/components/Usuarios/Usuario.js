@@ -4,6 +4,7 @@ import axios from 'axios';
 import Navegacion from '../Navegacion/Navegacion';
 import auth from '../../helpers/auth';
 import './Usuario.css';
+import DefaultComponent from '../../helpers/DefaultComponent';
 
 export default class Usuario extends Component {
   constructor(props) {
@@ -14,84 +15,114 @@ export default class Usuario extends Component {
       apellido: '',
       permisosUsuario: [],
       permisosSistema: [],
+      id_tipo_convocado: 0,
+      tipos_convocado: [],
       correos: [],
       gestionarUsuarios: false,
       gestionarConsejos: false,
+      encontrado: true,
       redirect: false
     }
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleOptionChange = this.handleOptionChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount() {
-    auth.verifyToken()
-      .then(value => {
-        if (value) {
-          axios.get(`/usuario/${this.state.cedula}`)
-            .then(user => {
-              if (user.data.success) {
-                const usuario = user.data.user;
-                this.setState({
-                  nombre: usuario.nombre,
-                  apellido: usuario.apellido
-                });
-              }
-              axios.get(`/correo/${this.state.cedula}`)
-                .then(emails => {
-                  if (emails.data.success) {
-                    this.setState({
-                      correos: emails.data.emails
-                    });
-                  }
-                  axios.get(`/usuario/permisos/${this.state.cedula}`)
-                    .then(roles => {
-                      if (roles.data.success) {
+    if (this.state.cedula !== auth.getInfo().cedula) {
+      auth.verifyToken()
+        .then(value => {
+          if (value) {
+            axios.get(`/usuario/${this.state.cedula}`)
+              .then(user => {
+                if (user.data.success) {
+                  const usuario = user.data.user;
+                  this.setState({
+                    nombre: usuario.nombre,
+                    apellido: usuario.apellido,
+                    id_tipo_convocado: usuario.id_tipo_convocado
+                  });
+                  axios.get(`/correo/${this.state.cedula}`)
+                    .then(emails => {
+                      if (emails.data.success) {
                         this.setState({
-                          permisosUsuario: roles.data.roles
+                          correos: emails.data.emails
                         });
                       }
-                      for (let i = 0; i < this.state.permisosUsuario.length; i++) {
-                        if (this.state.permisosUsuario[i].id_permiso === 1) {
-                          this.setState({
-                            gestionarUsuarios: true
-                          });
-                        }
-                        if (this.state.permisosUsuario[i].id_permiso === 2) {
-                          this.setState({
-                            gestionarConsejos: true
-                          });
-                        }
-                      }
-                      axios.get('/permiso')
+                      axios.get(`/usuario/permisos/${this.state.cedula}`)
                         .then(roles => {
                           if (roles.data.success) {
                             this.setState({
-                              permisosSistema: roles.data.roles
+                              permisosUsuario: roles.data.roles
                             });
                           }
+                          for (let i = 0; i < this.state.permisosUsuario.length; i++) {
+                            if (this.state.permisosUsuario[i].id_permiso === 1) {
+                              this.setState({
+                                gestionarUsuarios: true
+                              });
+                            }
+                            if (this.state.permisosUsuario[i].id_permiso === 2) {
+                              this.setState({
+                                gestionarConsejos: true
+                              });
+                            }
+                          }
+                          axios.get('/permiso')
+                            .then(roles => {
+                              if (roles.data.success) {
+                                this.setState({
+                                  permisosSistema: roles.data.roles
+                                });
+                              }
+                            })
+                            .catch((err) => console.log(err));
+                          axios.get('/tipo_convocado')
+                            .then(res => {
+                              if (res.data.success) {
+                                this.setState({
+                                  tipos_convocado: res.data.attendantTypes
+                                });
+                              }
+                            })
+                            .catch((err) => console.log(err));
                         })
                         .catch((err) => console.log(err));
                     })
                     .catch((err) => console.log(err));
-                })
-                .catch((err) => console.log(err));
+                } else {
+                  this.setState({
+                    encontrado: false
+                  });
+                }
+              })
+              .catch((err) => console.log(err));
+          } else {
+            this.setState({
+              redirect: true
             })
-            .catch((err) => console.log(err));
-        } else {
-          this.setState({
-            redirect: true
-          })
-          auth.logOut();
-        }
-      })
-      .catch((err) => console.log(err));
+            auth.logOut();
+          }
+        })
+        .catch((err) => console.log(err));
+    } else {
+      this.setState({
+        encontrado: false
+      });
+    }
   }
 
   handleInputChange(e) {
-    const value = e.target.checked
+    const value = e.target.checked;
     const name = e.target.name;
     this.setState({
       [name]: value
+    });
+  }
+
+  handleOptionChange(e) {
+    this.setState({
+      id_tipo_convocado: e.target.value
     });
   }
 
@@ -113,6 +144,7 @@ export default class Usuario extends Component {
         };
         await axios.post('/usuario_permiso', usuarioPermiso);
       }
+      await axios.put(`/usuario/convocado/${this.state.cedula}`, { id_tipo_convocado: this.state.id_tipo_convocado });
     } catch (err) {
       console.log(err);
     }
@@ -146,15 +178,27 @@ export default class Usuario extends Component {
     return checks;
   }
 
+  getTipoConvocado() {
+    const tipo_convocado = [];
+    for (let i = 0; i < this.state.tipos_convocado.length; i++) {
+      let id = this.state.tipos_convocado[i].id_tipo_convocado;
+      let descripcion = this.state.tipos_convocado[i].descripcion;
+      tipo_convocado.push(
+        <option value={id} key={i}>{descripcion}</option>
+      );
+    }
+    return tipo_convocado;
+  }
+
   render() {
-    return (this.state.redirect ? <Redirect to='/' /> :
+    return (this.state.redirect ? <Redirect to='/' /> : !this.state.encontrado ? <DefaultComponent /> :
       <>
         <Navegacion />
         <div className="row m-0 my-row">
           <div className="col-md-6 m-auto">
             <div className="card border-primary">
               <div className="card-body">
-                <h4 className="card-title text-center mb-4">Información de {this.state.nombre} {this.state.apellido}</h4>
+                <h3 className="card-title text-center mb-4">Información de {this.state.nombre} {this.state.apellido}</h3>
                 <p>Cédula: {this.state.cedula}</p>
                 {this.state.correos.length === 0 ? <p>Este usuario no tiene correos registrados.</p> : <h5>Correos asociados:</h5>}
                 {this.emails()}
@@ -164,9 +208,16 @@ export default class Usuario extends Component {
                   <div className="form-group">
                     {this.checks()}
                   </div>
+                  <hr />
+                  <div className="form-group">
+                    <p className="lead">Se convoca como:</p>
+                    <select className="custom-select" value={this.state.id_tipo_convocado} onChange={this.handleOptionChange}>
+                      {this.getTipoConvocado()}
+                    </select>
+                  </div>
                   <div className="form-group d-flex justify-content-around">
                     <button type="submit" className="btn btn-outline-primary my-width mt-2">Guardar Cambios</button>
-                    <Link to='/gUsuarios/usuarios' className="btn btn-outline-secondary my-width mt-2">Cancelar</Link>
+                    <Link to='/gUsuarios' className="btn btn-outline-secondary my-width mt-2">Cancelar</Link>
                   </div>
                 </form>
               </div>

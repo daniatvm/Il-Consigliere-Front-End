@@ -15,12 +15,14 @@ export default class InvitarUsuario extends Component {
       permisos: [],
       gestionarUsuarios: false,
       gestionarConsejos: false,
+      id_tipo_convocado: 1,
+      tipos_convocado: [],
       redirect: false
     };
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleOptionChange = this.handleOptionChange.bind(this);
     this.button = React.createRef();
-    this.input = React.createRef();
   }
 
   componentDidMount() {
@@ -32,6 +34,15 @@ export default class InvitarUsuario extends Component {
               if (res.data.success) {
                 this.setState({
                   permisos: res.data.roles
+                });
+              }
+            })
+            .catch((err) => console.log(err));
+          axios.get('/tipo_convocado')
+            .then(res => {
+              if (res.data.success) {
+                this.setState({
+                  tipos_convocado: res.data.attendantTypes
                 });
               }
             })
@@ -54,6 +65,12 @@ export default class InvitarUsuario extends Component {
     });
   }
 
+  handleOptionChange(e) {
+    this.setState({
+      id_tipo_convocado: e.target.value
+    });
+  }
+
   handleSubmit(e) {
     e.preventDefault();
     this.button.current.setAttribute('disabled', 'disabled');
@@ -62,7 +79,8 @@ export default class InvitarUsuario extends Component {
       .then(value => {
         if (value) {
           const info = {
-            correo: this.state.correo
+            correo: this.state.correo,
+            id_tipo_convocado: this.state.id_tipo_convocado
           };
           if (this.state.gestionarConsejos && this.state.gestionarUsuarios) {
             info.permisos = [1, 2];
@@ -81,6 +99,14 @@ export default class InvitarUsuario extends Component {
                 myAlert("Oh no!", "Error interno del servidor.", "error");
               }
               $('#invitar').modal('hide');
+              this.button.current.removeAttribute('disabled', 'disabled');
+              this.button.current.style.cursor = 'default';
+              this.setState({
+                correo: '',
+                gestionarUsuarios: false,
+                gestionarConsejos: false,
+                id_tipo_convocado: 1,
+              })
             })
             .catch((err) => console.log(err));
         } else {
@@ -93,7 +119,7 @@ export default class InvitarUsuario extends Component {
       .catch((err) => console.log(err));
   }
 
-  render() {
+  getPermisos() {
     const checks = [];
     for (let i = 0; i < this.state.permisos.length; i++) {
       let name = this.state.permisos[i].nombre;
@@ -109,6 +135,25 @@ export default class InvitarUsuario extends Component {
         </div>
       );
     }
+    return checks;
+  }
+
+  getTipoConvocado() {
+    const tipo_convocado = [];
+    for (let i = 0; i < this.state.tipos_convocado.length; i++) {
+      let id = this.state.tipos_convocado[i].id_tipo_convocado;
+      let descripcion = this.state.tipos_convocado[i].descripcion;
+      tipo_convocado.push(
+        <option value={id} key={i}>{descripcion}</option>
+      );
+    }
+    return tipo_convocado;
+  }
+
+  render() {
+    $('#invitar').on('shown.bs.modal', function () {
+      $('#modal-input').focus();
+    });
     return (this.state.redirect ? <Redirect to='/' /> :
       <>
         <button type="button" className="btn btn-outline-primary py-0 altura-button" data-toggle="modal" data-target="#invitar">
@@ -121,13 +166,19 @@ export default class InvitarUsuario extends Component {
                 <h3 className="modal-title text-center mb-4">Invitación</h3>
                 <form onSubmit={this.handleSubmit}>
                   <div className="form-group">
-                    <input type="email" required maxLength="20" name="correo"
+                    <input type="email" id='modal-input' required maxLength="50" name="correo"
                       placeholder="Correo electrónico" autoComplete="off" className="form-control"
-                      ref={this.input} onChange={this.handleInputChange} value={this.state.correo} />
+                      onChange={this.handleInputChange} value={this.state.correo} />
                   </div>
                   <div className="form-group">
-                    <p className="lead">Permisos que le desea asociar:</p>
-                    {checks}
+                    <p className="lead">Permisos que le asocia:</p>
+                    {this.getPermisos()}
+                  </div>
+                  <div className="form-group">
+                    <p className="lead">Se convoca como:</p>
+                    <select className="custom-select" value={this.state.id_tipo_convocado} onChange={this.handleOptionChange}>
+                      {this.getTipoConvocado()}
+                    </select>
                   </div>
                   <div className="form-group d-flex justify-content-around">
                     <button ref={this.button} type="submit" className="btn btn-outline-primary mt-4 my-size">Invitar</button>
@@ -139,6 +190,6 @@ export default class InvitarUsuario extends Component {
           </div>
         </div>
       </>
-    )
+    );
   }
 }

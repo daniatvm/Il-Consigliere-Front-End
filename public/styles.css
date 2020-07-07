@@ -36,3 +36,34 @@ h4 {
 .my-muted {
     color: grey;
 }
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: #4946ff;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #2000ad;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #010049;
+}
+
+.special-border {
+    border-top: 1px solid #5d5cb1 !important;
+}
+
+.my-size {
+    height: 35px !important;
+    width: 180px !important;
+}
+
+@media only screen and (max-width: 425px) {
+    .my-size {
+        width: 120px !important;
+    }
+}

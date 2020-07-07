@@ -4,6 +4,7 @@ import Navegacion from '../Navegacion/Navegacion';
 import axios from 'axios';
 import auth from '../../helpers/auth';
 import { myAlert } from '../../helpers/alert';
+import { getTodaysDate } from '../../helpers/todaysDate';
 import './RegistroConsejos.css';
 
 const puntos = [];
@@ -16,11 +17,11 @@ export default class RegistroConsejos extends Component {
       lugar: '',
       fecha: '',
       hora: '',
-      hoy: this.getTodaysDate(),
+      hoy: getTodaysDate(),
       tipoSesion: [],
       sesionSeleccionada: 1,
       punto: '',
-      updatePuntos: false,
+      puntos: [],
       redirect: false
     };
 
@@ -28,6 +29,7 @@ export default class RegistroConsejos extends Component {
     this.handleOptionChange = this.handleOptionChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.addDiscussion = this.addDiscussion.bind(this);
+    this.deleteDiscussion = this.deleteDiscussion.bind(this);
   }
 
   componentDidMount() {
@@ -53,14 +55,6 @@ export default class RegistroConsejos extends Component {
       .catch((err) => console.log(err));
   }
 
-  getTodaysDate() {
-    let today = new Date();
-    const dd = String(today.getDate()).padStart(2, '0');
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const yyyy = today.getFullYear();
-    return yyyy + '-' + mm + '-' + dd;
-  }
-
   handleInputChange(e) {
     let value = e.target.value;
     let name = e.target.name;
@@ -80,7 +74,8 @@ export default class RegistroConsejos extends Component {
     if (this.state.punto !== '') {
       puntos.push(this.state.punto);
       this.setState({
-        punto: ''
+        punto: '',
+        puntos: puntos
       });
     }
   }
@@ -106,7 +101,7 @@ export default class RegistroConsejos extends Component {
                 axios.post('/consejo', consejo)
                   .then(res => {
                     if (res.data.success) {
-                      this.props.history.push('/consejos');
+                      this.props.history.push('/gConsejos');
                     } else {
                       myAlert('Oh no!', 'Error interno del servidor.', 'error');
                     }
@@ -125,11 +120,11 @@ export default class RegistroConsejos extends Component {
       .catch((err) => console.log(err));
   }
 
-  deletePunto(e, i) {
+  deleteDiscussion(e, i) {
     e.preventDefault();
     puntos.splice(i, 1);
     this.setState({
-      updatePuntos: true
+      puntos: puntos
     });
   }
 
@@ -141,8 +136,8 @@ export default class RegistroConsejos extends Component {
     for (let i = 0; i < puntos.length; i++) {
       formatoPuntos.push(
         <div className='d-flex justify-content-between align-items-center my-2' key={i}>
-          <p className='m-0'>{(i + 1) + '. ' + puntos[i]}</p>
-          <i className="fas fa-trash-alt my-icon fa-lg" onClick={(e) => this.deletePunto(e, i)} />
+          <p className='m-0 text-justify'>{(i + 1) + '. ' + puntos[i]}</p>
+          <i className="fas fa-trash-alt my-icon fa-lg mx-1" onClick={(e) => this.deleteDiscussion(e, i)} />
         </div>
       );
     }
@@ -152,14 +147,14 @@ export default class RegistroConsejos extends Component {
   getCouncilTypes() {
     const info = [];
     for (let i = 0; i < this.state.tipoSesion.length; i++) {
-      let id = this.state.tipoSesion[i].id_tipo_sesion;
-      let name = this.state.tipoSesion[i].descripcion;
+      let id_tipo_sesion = this.state.tipoSesion[i].id_tipo_sesion;
+      let descripcion = this.state.tipoSesion[i].descripcion;
       info.push(
         <div className="custom-control custom-radio" key={i}>
-          <input type="radio" id={id} name="sesion" value={id} onChange={this.handleOptionChange}
-            checked={this.state.sesionSeleccionada === id} className="custom-control-input" />
-          <label className="custom-control-label" htmlFor={id}>
-            {name}
+          <input type="radio" id={descripcion} name="sesion" value={id_tipo_sesion} onChange={this.handleOptionChange}
+            checked={parseInt(this.state.sesionSeleccionada, 10) === id_tipo_sesion} className="custom-control-input" />
+          <label className="custom-control-label" htmlFor={descripcion}>
+            {descripcion}
           </label>
         </div>
       );
@@ -185,7 +180,7 @@ export default class RegistroConsejos extends Component {
                           autoFocus onChange={this.handleInputChange} value={this.state.consecutivo} />
                       </div>
                       <div className="form-group">
-                        <input type="text" required maxLength="30" name="lugar"
+                        <input type="text" required maxLength="100" name="lugar"
                           placeholder="Lugar" autoComplete="off" className="form-control"
                           onChange={this.handleInputChange} value={this.state.lugar} />
                       </div>
@@ -210,7 +205,7 @@ export default class RegistroConsejos extends Component {
                     </p>
                       <div className="form-group">
                         <div className='d-flex align-items-center'>
-                          <textarea placeholder='Punto de agenda (opcional)' maxLength="300" name='punto' className="form-control mr-2" onChange={this.handleInputChange} value={this.state.punto} />
+                          <textarea placeholder='Punto de agenda (opcional)' maxLength="800" name='punto' className="form-control mr-2" onChange={this.handleInputChange} value={this.state.punto} />
                           <i className="fas fa-plus-square my-icon fa-lg" onClick={(e) => this.addDiscussion(e)} />
                         </div>
                         <div className='punto-container mt-2'>

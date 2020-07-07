@@ -1,17 +1,16 @@
 import React, { Component } from 'react';
 import { Redirect, Link } from 'react-router-dom';
 import axios from 'axios';
+import swal from 'sweetalert';
 import Navegacion from '../Navegacion/Navegacion';
 import auth from '../../helpers/auth';
+import './VisualizarConsejos.css';
 
-export default class Consejos extends Component {
+export default class VisualizarConsejos extends Component {
+
   constructor(props) {
     super(props);
-    const info = auth.getInfo()
     this.state = {
-      cedula: info.cedula,
-      nombre: info.nombre,
-      apellido: info.apellido,
       consejos: [],
       redirect: false
     }
@@ -19,6 +18,45 @@ export default class Consejos extends Component {
 
   componentDidMount() {
     this.getCouncils();
+  }
+
+  deleteCouncil(e, consecutivo) {
+    e.preventDefault();
+    auth.verifyToken()
+      .then(value => {
+        if (value) {
+          swal({
+            title: "Confirmación",
+            text: `Se eliminará toda la información del consejo ${consecutivo}`,
+            icon: "warning",
+            buttons: ["Cancelar", "Confirmar"],
+            dangerMode: true,
+          })
+            .then((willDelete) => {
+              if (willDelete) {
+                axios.delete(`/punto/por_consejo/${consecutivo}`)
+                  .then(() => {
+                    axios.delete(`/convocado/por_consejo/${consecutivo}`)
+                      .then(() => {
+                        axios.delete(`/consejo/${consecutivo}`)
+                          .then(() => {
+                            this.getCouncils();
+                          })
+                          .catch((err) => console.log(err));
+                      })
+                      .catch((err) => console.log(err));
+                  })
+                  .catch((err) => console.log(err));
+              }
+            });
+        } else {
+          this.setState({
+            redirect: true
+          })
+          auth.logOut();
+        }
+      })
+      .catch((err) => console.log(err));
   }
 
   getCouncils() {
@@ -56,12 +94,15 @@ export default class Consejos extends Component {
       let hora = this.state.consejos[i].hora;
       let id_tipo_sesion = this.state.consejos[i].id_tipo_sesion;
       councils.push(
-        <div className="col-md-4 fila-mis-consejos" key={i}>
+        <div className="col-md-4" key={i}>
           <div className="card border-primary mb-3">
             <div className="card-body">
               <div className='d-flex justify-content-between align-items-center'>
                 <p className="card-title m-0">{institucion}</p>
-                <Link to={`/consejos/${consecutivo}`}><i className="far fa-eye fa-lg ml-2" style={{ color: "navy" }}></i></Link>
+                <div className='d-flex justify-content-between align-items-center'>
+                  <Link to={`/gConsejos/${consecutivo}`}><i className="fas fa-edit fa-lg ml-2 consejo-icon" style={{ color: "navy" }}></i></Link>
+                  <i className="fas fa-trash-alt my-icon fa-lg ml-2" onClick={(e) => this.deleteCouncil(e, consecutivo)} />
+                </div>
               </div>
               <p className='m-0'>{escuela}</p>
               <p className='m-0'>{consejo}</p>
@@ -82,12 +123,15 @@ export default class Consejos extends Component {
       <>
         <Navegacion />
         <div className='container'>
-          <h3>Il Consigliere</h3>
-          <p className='lead mt-2'>Te damos la bienvenida {this.state.nombre} {this.state.apellido}</p>
-          {this.state.consejos.length > 0 && <p className='text-center lead'>Consejos a los que te han convocado:</p>}
+          <h4>Próximos Consejos</h4>
+          <hr />
         </div>
         <div className="row m-0 mt-4">
-          {this.state.consejos.length === 0 ? <p className='my-muted'>No tienes consejos próximos a asistir.</p> : this.councilList()}
+          {this.state.consejos.length === 0 ? <p className='my-muted'>No hay próximos consejos para mostrar</p> : this.councilList()}
+        </div>
+        <div className='container'>
+          <h4>Consejos anteriores</h4>
+          <hr />
         </div>
       </>
     );
