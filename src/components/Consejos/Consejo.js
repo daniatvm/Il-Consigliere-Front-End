@@ -6,8 +6,6 @@ import auth from '../../helpers/auth';
 import DefaultComponent from '../../helpers/DefaultComponent';
 import './RegistroConsejos.css';
 
-const solicitudes = [];
-
 export default class Consejos extends Component {
 
   constructor(props) {
@@ -15,10 +13,11 @@ export default class Consejos extends Component {
     this.state = {
       consecutivo: this.props.match.params.consecutivo,
       consejo: {},
-      puntos: [],
       solicitudes: [],
+      aprobados: [],
       punto: '',
       convocados: [],
+      cedula: auth.getInfo().cedula,
       encontrado: true,
       redirect: false
     }
@@ -46,11 +45,18 @@ export default class Consejos extends Component {
                     }
                   })
                   .catch((err) => console.log(err));
-                axios.get(`/punto/${this.state.consecutivo}`)
+                axios.get(`/punto/por_consejo/${this.state.consecutivo}`)
                   .then(resp => {
                     if (resp.data.success) {
+                      const aprobados = [];
+                      for (let i = 0; i < resp.data.discussions.length; i++) {
+                        let punto = resp.data.discussions[i];
+                        if (punto.descripcion === 'aceptado') {
+                          aprobados.push(punto);
+                        }
+                      }
                       this.setState({
-                        puntos: resp.data.discussions
+                        aprobados: aprobados
                       });
                     }
                   })
@@ -70,6 +76,19 @@ export default class Consejos extends Component {
         }
       })
       .catch((err) => console.log(err));
+    this.getRequestsFromBD();
+  }
+
+  getRequestsFromBD() {
+    axios.get(`/punto/solicitud/${this.state.cedula}/${this.state.consecutivo}`)
+      .then(res => {
+        if (res.data.success) {
+          this.setState({
+            solicitudes: res.data.discussions
+          });
+        }
+      })
+      .catch((err) => console.log(err));
   }
 
   handleInputChange(e) {
@@ -80,12 +99,20 @@ export default class Consejos extends Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    //llamada bd y guardar punto como solicitud
     if (this.state.punto !== '') {
-      solicitudes.push(this.state.punto);
-      this.setState({
-        punto: ''
-      });
+      const info = {
+        id_tipo_punto: 2,
+        asunto: this.state.punto,
+        cedula: this.state.cedula,
+        consecutivo: this.state.consecutivo
+      };
+      axios.post('/punto', info)
+        .then(res => {
+          if (res.data.success) {
+            this.getRequestsFromBD();
+          }
+        })
+        .catch((err) => console.log(err));
     }
   }
 
@@ -99,16 +126,16 @@ export default class Consejos extends Component {
 
   getDiscussions() {
     const discussions = [];
-    for (let i = 0; i < this.state.puntos.length; i++) {
-      discussions.push(<p className='m-0 text-justify' key={i}>{(i + 1) + '. ' + this.state.puntos[i].asunto}</p>);
+    for (let i = 0; i < this.state.aprobados.length; i++) {
+      discussions.push(<p className='m-0 text-justify' key={i}>{(i + 1) + '. ' + this.state.aprobados[i].asunto}</p>);
     }
     return discussions;
   }
 
   getRequests() {
     const requests = [];
-    for (let i = 0; i < solicitudes.length; i++) {
-      requests.push(<p className='m-0 text-justify' key={i}>{(i + 1) + '. ' + solicitudes[i]}</p>);
+    for (let i = 0; i < this.state.solicitudes.length; i++) {
+      requests.push(<p className='m-0 text-justify' key={i}>{(i + 1) + '. ' + this.state.solicitudes[i].asunto}</p>);
     }
     return requests;
   }

@@ -96,7 +96,9 @@ export default class RegistroConsejos extends Component {
                   fecha: this.state.fecha,
                   hora: this.state.hora,
                   id_tipo_sesion: this.state.sesionSeleccionada,
-                  puntos: puntos
+                  puntos: puntos,
+                  cedula: auth.getInfo().cedula,
+                  id_tipo_punto: 1
                 };
                 axios.post('/consejo', consejo)
                   .then(res => {
