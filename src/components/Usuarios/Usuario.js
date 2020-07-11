@@ -5,12 +5,14 @@ import Navegacion from '../Navegacion/Navegacion';
 import auth from '../../helpers/auth';
 import './Usuario.css';
 import DefaultComponent from '../../helpers/DefaultComponent';
+import { Loading } from '../../helpers/Loading';
 
 export default class Usuario extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      cedula: this.props.match.params.usuario,
+      isLoading: true,
+      cedula: this.props.match.params.cedula,
       nombre: '',
       apellido: '',
       permisosUsuario: [],
@@ -38,6 +40,7 @@ export default class Usuario extends Component {
                 if (user.data.success) {
                   const usuario = user.data.user;
                   this.setState({
+                    isLoading: false,
                     nombre: usuario.nombre,
                     apellido: usuario.apellido,
                     id_tipo_convocado: usuario.id_tipo_convocado
@@ -92,6 +95,7 @@ export default class Usuario extends Component {
                     .catch((err) => console.log(err));
                 } else {
                   this.setState({
+                    isLoading: false,
                     encontrado: false
                   });
                 }
@@ -151,7 +155,7 @@ export default class Usuario extends Component {
     this.props.history.push('/gUsuarios/usuarios');
   }
 
-  emails() {
+  getEmails() {
     const emails = [];
     for (let i = 0; i < this.state.correos.length; i++) {
       emails.push(<p key={i}>{this.state.correos[i].correo}</p>);
@@ -178,7 +182,7 @@ export default class Usuario extends Component {
     return checks;
   }
 
-  getTipoConvocado() {
+  getAttendantType() {
     const tipo_convocado = [];
     for (let i = 0; i < this.state.tipos_convocado.length; i++) {
       let id = this.state.tipos_convocado[i].id_tipo_convocado;
@@ -191,7 +195,7 @@ export default class Usuario extends Component {
   }
 
   render() {
-    return (this.state.redirect ? <Redirect to='/' /> : !this.state.encontrado ? <DefaultComponent /> :
+    return (this.state.isLoading ? <Loading /> : this.state.redirect ? <Redirect to='/' /> : !this.state.encontrado ? <DefaultComponent /> :
       <>
         <Navegacion />
         <div className="row m-0 my-row">
@@ -201,7 +205,7 @@ export default class Usuario extends Component {
                 <h3 className="card-title text-center mb-4">Información de {this.state.nombre} {this.state.apellido}</h3>
                 <p>Cédula: {this.state.cedula}</p>
                 {this.state.correos.length === 0 ? <p>Este usuario no tiene correos registrados.</p> : <h5>Correos asociados:</h5>}
-                {this.emails()}
+                {this.getEmails()}
                 <hr />
                 <h4 className="text-center mb-4">Edición de permisos asociados</h4>
                 <form onSubmit={this.handleSubmit}>
@@ -212,7 +216,7 @@ export default class Usuario extends Component {
                   <div className="form-group">
                     <p className="lead">Se convoca como:</p>
                     <select className="custom-select" value={this.state.id_tipo_convocado} onChange={this.handleOptionChange}>
-                      {this.getTipoConvocado()}
+                      {this.getAttendantType()}
                     </select>
                   </div>
                   <div className="form-group d-flex justify-content-around">

@@ -72,9 +72,6 @@ export default class Navegacion extends Component {
                       <NavLink className="dropdown-item" activeClassName="active" exact to="/gConsejos/registro">Nuevo Consejo</NavLink>
                     </div>
                   </li>
-                  // <li className="nav-item">
-                  //   <NavLink className="nav-link text" activeClassName="active" exact to="/gConsejos">Gestión de Consejos</NavLink>
-                  // </li>
                 }
                 <li className="nav-item">
                   <NavLink className="nav-link text" activeClassName="active" exact to="/cuenta" onClick={this.verifyToken}>Mi Cuenta</NavLink>

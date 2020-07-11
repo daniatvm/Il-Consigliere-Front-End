@@ -1,22 +1,24 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import axios from 'axios';
+import Convocados from './Convocados';
 import Navegacion from '../Navegacion/Navegacion';
 import auth from '../../helpers/auth';
 import DefaultComponent from '../../helpers/DefaultComponent';
-import './RegistroConsejos.css';
+import { Loading } from '../../helpers/Loading';
+import './Consejos.css';
 
 export default class Consejos extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
+      isLoading: true,
       consecutivo: this.props.match.params.consecutivo,
       consejo: {},
       solicitudes: [],
       aprobados: [],
       punto: '',
-      convocados: [],
       cedula: auth.getInfo().cedula,
       encontrado: true,
       redirect: false
@@ -34,40 +36,27 @@ export default class Consejos extends Component {
             .then(res => {
               if (res.data.success) {
                 this.setState({
+                  isLoading: false,
                   consejo: res.data.council
                 });
-                axios.get(`/convocado/nombres_usuario/${this.state.consecutivo}`)
+                axios.get(`/punto/aprobado/${this.state.consecutivo}`)
                   .then(resp => {
                     if (resp.data.success) {
                       this.setState({
-                        convocados: resp.data.convocados
-                      });
-                    }
-                  })
-                  .catch((err) => console.log(err));
-                axios.get(`/punto/por_consejo/${this.state.consecutivo}`)
-                  .then(resp => {
-                    if (resp.data.success) {
-                      const aprobados = [];
-                      for (let i = 0; i < resp.data.discussions.length; i++) {
-                        let punto = resp.data.discussions[i];
-                        if (punto.descripcion === 'aceptado') {
-                          aprobados.push(punto);
-                        }
-                      }
-                      this.setState({
-                        aprobados: aprobados
+                        aprobados: resp.data.discussions
                       });
                     }
                   })
                   .catch((err) => console.log(err));
               } else {
                 this.setState({
+                  isLoading: false,
                   encontrado: false
                 });
               }
             })
             .catch((err) => console.log(err));
+          this.getRequestsFromBD();
         } else {
           this.setState({
             redirect: true
@@ -76,7 +65,6 @@ export default class Consejos extends Component {
         }
       })
       .catch((err) => console.log(err));
-    this.getRequestsFromBD();
   }
 
   getRequestsFromBD() {
@@ -100,34 +88,37 @@ export default class Consejos extends Component {
   handleSubmit(e) {
     e.preventDefault();
     if (this.state.punto !== '') {
-      const info = {
-        id_tipo_punto: 2,
-        asunto: this.state.punto,
-        cedula: this.state.cedula,
-        consecutivo: this.state.consecutivo
-      };
-      axios.post('/punto', info)
-        .then(res => {
-          if (res.data.success) {
-            this.getRequestsFromBD();
+      auth.verifyToken()
+        .then(value => {
+          if (value) {
+            const info = {
+              id_tipo_punto: 2,
+              asunto: this.state.punto,
+              cedula: this.state.cedula,
+              consecutivo: this.state.consecutivo
+            };
+            axios.post('/punto', info)
+              .then(res => {
+                if (res.data.success) {
+                  this.getRequestsFromBD();
+                }
+              })
+              .catch((err) => console.log(err));
+          } else {
+            this.setState({
+              redirect: true
+            })
+            auth.logOut();
           }
         })
         .catch((err) => console.log(err));
     }
   }
 
-  getAttendants() {
-    const attendants = [];
-    for (let i = 0; i < this.state.convocados.length; i++) {
-      attendants.push(<p className='m-0' key={i}>{this.state.convocados[i].nombre} {this.state.convocados[i].apellido}</p>);
-    }
-    return attendants;
-  }
-
   getDiscussions() {
     const discussions = [];
     for (let i = 0; i < this.state.aprobados.length; i++) {
-      discussions.push(<p className='m-0 text-justify' key={i}>{(i + 1) + '. ' + this.state.aprobados[i].asunto}</p>);
+      discussions.push(<li className='m-0 text-justify' key={i}>{this.state.aprobados[i].asunto}</li>);
     }
     return discussions;
   }
@@ -135,13 +126,13 @@ export default class Consejos extends Component {
   getRequests() {
     const requests = [];
     for (let i = 0; i < this.state.solicitudes.length; i++) {
-      requests.push(<p className='m-0 text-justify' key={i}>{(i + 1) + '. ' + this.state.solicitudes[i].asunto}</p>);
+      requests.push(<li className='m-0 text-justify' key={i}>{this.state.solicitudes[i].asunto}</li>);
     }
     return requests;
   }
 
   render() {
-    return (this.state.redirect ? <Redirect to='/' /> : !this.state.encontrado ? <DefaultComponent /> :
+    return (this.state.isLoading ? <Loading /> : this.state.redirect ? <Redirect to='/' /> : !this.state.encontrado ? <DefaultComponent /> :
       <>
         <Navegacion />
         <div className="row m-0">
@@ -159,16 +150,15 @@ export default class Consejos extends Component {
                     <p className='text-center m-0'>HORA: {this.state.consejo.hora}</p>
                     <p className='text-center m-0'>LUGAR: {this.state.consejo.lugar}</p>
                     <hr />
-                    <p>Personas convocadas al consejo:</p>
-                    <div className='punto-container'>
-                      {this.getAttendants()}
-                    </div>
+                    <Convocados consecutivo={this.state.consecutivo} />
                   </div>
                   <div className='registro-container der'>
                     <div className='puntos-conrainer'>
                       <p>Puntos de Agenda:</p>
                       <div className='punto-container'>
-                        {this.getDiscussions()}
+                        <ol className='pl-3'>
+                          {this.getDiscussions()}
+                        </ol>
                       </div>
                       <p>Solicita puntos de agenda</p>
                       <form onSubmit={this.handleSubmit}>
@@ -179,7 +169,9 @@ export default class Consejos extends Component {
                           </div>
                         </div>
                         <div className='solicitud-container'>
-                          {this.getRequests()}
+                          <ol className='pl-3'>
+                            {this.getRequests()}
+                          </ol>
                         </div>
                       </form>
                     </div>
@@ -190,6 +182,6 @@ export default class Consejos extends Component {
           </div>
         </div>
       </>
-    )
+    );
   }
 }

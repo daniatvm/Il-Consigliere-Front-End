@@ -3,7 +3,6 @@ import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 import auth from '../../helpers/auth';
 import { myAlert } from '../../helpers/alert';
-import './InvitarUsuario.css';
 import $ from 'jquery';
 import 'bootstrap';
 

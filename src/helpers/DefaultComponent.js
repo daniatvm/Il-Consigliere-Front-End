@@ -3,7 +3,7 @@ import auth from './auth';
 import roles from './roles';
 import logo from '../assets/tec.png';
 import Navegacion from '../components/Navegacion/Navegacion';
-import loading from '../assets/loading.gif';
+import { Loading } from './Loading';
 
 export default class DefaultComponent extends Component {
   constructor(props) {
@@ -28,13 +28,7 @@ export default class DefaultComponent extends Component {
 
   render() {
     if (this.state.isLoading) {
-      return (
-        <div className="row m-0" style={{ height: '90vh' }}>
-          <div className="col-sm-12 my-auto">
-            <img src={loading} className='img-fluid m-auto d-block' style={{ opacity: 0.6 }} alt='logo' />
-          </div>
-        </div>
-      );
+      return <Loading />;
     } else {
       return (
         <>

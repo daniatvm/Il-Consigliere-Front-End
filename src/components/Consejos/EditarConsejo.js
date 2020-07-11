@@ -1,35 +1,34 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
 import Navegacion from '../Navegacion/Navegacion';
 import axios from 'axios';
 import auth from '../../helpers/auth';
-import { myAlert } from '../../helpers/alert';
 import { getTodaysDate } from '../../helpers/todaysDate';
+import { Loading } from '../../helpers/Loading';
+import { Redirect, Link } from 'react-router-dom';
+import DefaultComponent from '../../helpers/DefaultComponent';
 import './Consejos.css';
+import AgendaOficial from './AgendaOficial';
 
-const puntos = [];
-
-export default class RegistroConsejos extends Component {
+export default class EditarConsejo extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
-      consecutivo: '',
+      isLoading: true,
+      consecutivo: this.props.match.params.consecutivo,
       lugar: '',
       fecha: '',
       hora: '',
       hoy: getTodaysDate(),
       tipoSesion: [],
-      sesionSeleccionada: 1,
-      punto: '',
-      puntos: [],
+      sesionSeleccionada: 0,
+      encontrado: true,
       redirect: false
-    };
+    }
 
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleOptionChange = this.handleOptionChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.addDiscussion = this.addDiscussion.bind(this);
-    this.deleteDiscussion = this.deleteDiscussion.bind(this);
   }
 
   componentDidMount() {
@@ -41,6 +40,24 @@ export default class RegistroConsejos extends Component {
               if (res.data.success) {
                 this.setState({
                   tipoSesion: res.data.councilTypes
+                });
+              }
+            })
+            .catch((err) => console.log(err));
+          axios.get(`/consejo/${this.state.consecutivo}`)
+            .then(res => {
+              if (res.data.success) {
+                this.setState({
+                  isLoading: false,
+                  lugar: res.data.council.lugar,
+                  fecha: res.data.council.fecha,
+                  hora: res.data.council.hora,
+                  sesionSeleccionada: res.data.council.id_tipo_sesion
+                });
+              } else {
+                this.setState({
+                  isLoading: false,
+                  encontrado: false
                 });
               }
             })
@@ -69,46 +86,21 @@ export default class RegistroConsejos extends Component {
     });
   }
 
-  addDiscussion(e) {
-    e.preventDefault();
-    if (this.state.punto !== '') {
-      puntos.push(this.state.punto);
-      this.setState({
-        punto: '',
-        puntos: puntos
-      });
-    }
-  }
-
   handleSubmit(e) {
     e.preventDefault();
     auth.verifyToken()
       .then(value => {
         if (value) {
-          axios.get(`/consejo/${this.state.consecutivo}`)
-            .then(resp => {
-              if (resp.data.success) {
-                myAlert('Atención', `El número de consecutivo: ${this.state.consecutivo} ya existe en el sistema.`, 'warning');
-              } else {
-                const consejo = {
-                  consecutivo: this.state.consecutivo,
-                  lugar: this.state.lugar,
-                  fecha: this.state.fecha,
-                  hora: this.state.hora,
-                  id_tipo_sesion: this.state.sesionSeleccionada,
-                  puntos: puntos,
-                  cedula: auth.getInfo().cedula,
-                  id_tipo_punto: 1
-                };
-                axios.post('/consejo', consejo)
-                  .then(res => {
-                    if (res.data.success) {
-                      this.props.history.push('/gConsejos');
-                    } else {
-                      myAlert('Oh no!', 'Error interno del servidor.', 'error');
-                    }
-                  })
-                  .catch((err) => console.log(err));
+          const consejo = {
+            id_tipo_sesion: this.state.sesionSeleccionada,
+            lugar: this.state.lugar,
+            fecha: this.state.fecha,
+            hora: this.state.hora
+          }
+          axios.put(`/consejo/${this.state.consecutivo}`, consejo)
+            .then(res => {
+              if (res.data.success) {
+                this.props.history.push('/gConsejos');
               }
             })
             .catch((err) => console.log(err));
@@ -120,30 +112,6 @@ export default class RegistroConsejos extends Component {
         }
       })
       .catch((err) => console.log(err));
-  }
-
-  deleteDiscussion(e, i) {
-    e.preventDefault();
-    puntos.splice(i, 1);
-    this.setState({
-      puntos: puntos
-    });
-  }
-
-  getDiscussions() {
-    let formatoPuntos = [];
-    if (puntos.length === 0) {
-      return <p className='my-muted'>No se han agregado puntos de agenda</p>;
-    }
-    for (let i = 0; i < puntos.length; i++) {
-      formatoPuntos.push(
-        <div className='d-flex justify-content-between align-items-center my-2' key={i}>
-          <p className='m-0 text-justify'>{(i + 1) + '. ' + puntos[i]}</p>
-          <i className="fas fa-trash-alt my-icon fa-lg mx-1" onClick={(e) => this.deleteDiscussion(e, i)} />
-        </div>
-      );
-    }
-    return formatoPuntos;
   }
 
   getCouncilTypes() {
@@ -165,28 +133,29 @@ export default class RegistroConsejos extends Component {
   }
 
   render() {
-    return (this.state.redirect ? <Redirect to='/' /> :
+    return (this.state.isLoading ? <Loading /> : this.state.redirect ? <Redirect to='/' /> : !this.state.encontrado ? <DefaultComponent /> :
       <>
         <Navegacion />
         <div className="row m-0">
           <div className="col-md-10 m-auto">
             <div className="card border-primary consejo-card">
               <div className="card-body">
-                <h3 className="card-title text-center mb-4">Nuevo Consejo</h3>
                 <form onSubmit={this.handleSubmit}>
                   <div className='todo-registro'>
                     <div className='registro-container izq'>
-                      <div className="form-group">
+                      <p className='text-center'>Edición Básica del Consejo {this.state.consecutivo}</p>
+                      {/* <div className="form-group">
                         <input type="text" required maxLength="10" name="consecutivo"
                           placeholder="Consecutivo" autoComplete="off" className="form-control"
                           autoFocus onChange={this.handleInputChange} value={this.state.consecutivo} />
-                      </div>
+                      </div> */}
                       <div className="form-group">
-                        <input type="text" required maxLength="100" name="lugar"
+                        <input type="text" required maxLength="100" name="lugar" autoFocus
                           placeholder="Lugar" autoComplete="off" className="form-control"
                           onChange={this.handleInputChange} value={this.state.lugar} />
+                        <p className='my-muted'>*Lugar donde se llevará a cabo el consejo.</p>
                       </div>
-                      <p className='lead'>Seleccione el tipo de sesión:</p>
+                      <p className='m-0'>Seleccione el tipo de sesión:</p>
                       <div className="form-group">
                         {this.getCouncilTypes()}
                       </div>
@@ -202,22 +171,12 @@ export default class RegistroConsejos extends Component {
                       </div>
                     </div>
                     <div className='registro-container der'>
-                      <p className='lead text-center'>
-                        Puntos de Agenda Iniciales
-                    </p>
-                      <div className="form-group">
-                        <div className='d-flex align-items-center'>
-                          <textarea placeholder='Punto de agenda (opcional)' maxLength="800" name='punto' className="form-control mr-2" onChange={this.handleInputChange} value={this.state.punto} />
-                          <i className="fas fa-plus-square my-icon fa-lg" onClick={(e) => this.addDiscussion(e)} />
-                        </div>
-                        <div className='punto-container mt-2'>
-                          {this.getDiscussions()}
-                        </div>
-                      </div>
+                      <AgendaOficial consecutivo={this.state.consecutivo} />
                     </div>
                   </div>
-                  <div className="form-group d-flex justify-content-center">
-                    <button type="submit" className="btn btn-outline-primary mt-4 consejo-button">Crear Consejo</button>
+                  <div className="form-group d-flex justify-content-around">
+                    <button type="submit" className="btn btn-outline-primary mt-4 editar-button">Guardar Cambios</button>
+                    <Link className="btn btn-outline-secondary mt-4 editar-button" to='/gConsejos'>Cancelar</Link>
                   </div>
                 </form>
               </div>

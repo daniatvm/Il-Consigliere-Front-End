@@ -6,7 +6,9 @@ import Inicio from './components/Inicio/Inicio';
 import Consejos from './components/Consejos/Consejos';
 import Consejo from './components/Consejos/Consejo';
 import RegistroConsejos from './components/Consejos/RegistroConsejos';
+import Convocar from './components/Consejos/Convocar';
 import VisualizarConsejos from './components/Consejos/VisualizarConsejos';
+import EditarConsejo from './components/Consejos/EditarConsejo';
 import ListaUsuarios from './components/Usuarios/ListaUsuarios';
 import Registro from './components/Usuarios/Registro';
 import Usuario from './components/Usuarios/Usuario';
@@ -21,12 +23,14 @@ function App() {
       <Switch>
         <Route path='/gUsuarios/registro/:token' component={Registro} />
         <ProtectedRoute path='/gConsejos/registro' role={Role.CouncilModifier} component={RegistroConsejos} />
+        <ProtectedRoute path='/gConsejos/participantes/:consecutivo' role={Role.CouncilModifier} component={Convocar} />
+        <ProtectedRoute path='/gConsejos/:consecutivo' role={Role.CouncilModifier} component={EditarConsejo} />
         <ProtectedRoute path='/gConsejos' role={Role.CouncilModifier} component={VisualizarConsejos} />
-        <ProtectedRoute path='/consejos/:consecutivo' role={Role.CouncilModifier} component={Consejo} />
+        <ProtectedRoute path='/gUsuarios/:cedula' exact role={Role.UserModifier} component={Usuario} />
+        <ProtectedRoute path='/gUsuarios' exact role={Role.UserModifier} component={ListaUsuarios} />
+        <ProtectedRoute path='/consejos/:consecutivo' component={Consejo} />
         <ProtectedRoute path='/consejos' component={Consejos} />
         <ProtectedRoute path='/cuenta' component={Cuenta} />
-        <ProtectedRoute path='/gUsuarios/:usuario' exact role={Role.UserModifier} component={Usuario} />
-        <ProtectedRoute path='/gUsuarios' exact role={Role.UserModifier} component={ListaUsuarios} />
         <Route path='/acceso' component={Acceso} />
         <Route exact path='/' component={Inicio} />
         <Route path='*' component={DefaultComponent} />

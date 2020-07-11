@@ -19,6 +19,10 @@
     width: 35vw;
 }
 
+.editar-button {
+    width: 25vw;
+}
+
 .izq {
     margin-right: 16px;
 }
@@ -30,6 +34,26 @@
 .solicitud-container {
     height: 15vh;
     overflow: auto;
+}
+
+.convocar-button {
+    width: 18vw;
+    height: 35px;
+}
+
+.solicitud-button {
+    height: 20px;
+}
+
+.convocado-div {
+    height: 30vh;
+    overflow: auto;
+}
+
+@media only screen and (max-width: 900px) {
+    .solicitud-button {
+        height: auto;
+    }
 }
 
 @media only screen and (max-width: 760px) {
@@ -47,5 +71,11 @@
     }
     .der {
         margin: 0;
+    }
+}
+
+@media only screen and (max-width: 540px) {
+    .editar-button {
+        width: auto;
     }
 }
