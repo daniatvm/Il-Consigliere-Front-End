@@ -98,7 +98,7 @@ export default class Convocados extends Component {
               </ol>
             </>
           }
-          {this.state.docentes.length > 0 &&
+          {this.state.estudiantes.length > 0 &&
             <>
               <p className='m-0'>Estudiantes:</p>
               <ol className='pl-3'>

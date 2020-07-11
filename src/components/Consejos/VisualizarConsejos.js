@@ -10,9 +10,13 @@ export default class VisualizarConsejos extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      consecutivo: '',
       consejos: [],
+      anteriores: [],
       redirect: false
     }
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount() {
@@ -71,6 +75,15 @@ export default class VisualizarConsejos extends Component {
               }
             })
             .catch((err) => console.log(err));
+          axios.get('/consejo/anteriores')
+            .then(res => {
+              if (res.data.success) {
+                this.setState({
+                  anteriores: res.data.councils
+                });
+              }
+            })
+            .catch((err) => console.log(err));
         } else {
           this.setState({
             redirect: true
@@ -79,6 +92,18 @@ export default class VisualizarConsejos extends Component {
         }
       })
       .catch((err) => console.log(err));
+  }
+
+  handleInputChange(e) {
+    let value = e.target.value;
+    let name = e.target.name;
+    this.setState({
+      [name]: value
+    });
+  }
+
+  handleSubmit(e) {
+    e.preventDefault();
   }
 
   councilList() {
@@ -100,8 +125,43 @@ export default class VisualizarConsejos extends Component {
                 <p className="card-title m-0">{institucion}</p>
                 <div className='d-flex justify-content-between align-items-center'>
                   <Link to={`/gConsejos/participantes/${consecutivo}`}><i className="fas fa-user-cog fa-lg ml-2 consejo-icon" style={{ color: "navy" }}></i></Link>
-                  <Link to={`/gConsejos/${consecutivo}`}><i className="fas fa-edit fa-lg ml-2 consejo-icon" style={{ color: "navy" }}></i></Link>
+                  <Link to={`/gConsejos/editar/${consecutivo}`}><i className="fas fa-edit fa-lg ml-2 consejo-icon" style={{ color: "navy" }}></i></Link>
                   <i className="fas fa-trash-alt my-icon fa-lg ml-2" onClick={(e) => this.deleteCouncil(e, consecutivo)} />
+                </div>
+              </div>
+              <p className='m-0'>{escuela}</p>
+              <p className='m-0'>{consejo}</p>
+              <p className='m-0'>Sesión {id_tipo_sesion === 1 ? 'Ordinaria' : 'Extraordinaria'} {consecutivo}</p>
+              <p className='m-0'>Lugar: {lugar}</p>
+              <p className='m-0'>Fecha: {fecha}</p>
+              <p className='m-0'>Hora: {hora}</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return councils;
+  }
+
+  previousCouncilList() {
+    const councils = [];
+    for (let i = 0; i < this.state.anteriores.length; i++) {
+      let consecutivo = this.state.anteriores[i].consecutivo;
+      let institucion = this.state.anteriores[i].institucion;
+      let escuela = this.state.anteriores[i].escuela;
+      let consejo = this.state.anteriores[i].nombre_consejo;
+      let lugar = this.state.anteriores[i].lugar;
+      let fecha = this.state.anteriores[i].fecha;
+      let hora = this.state.anteriores[i].hora;
+      let id_tipo_sesion = this.state.anteriores[i].id_tipo_sesion;
+      councils.push(
+        <div className="col-md-4" key={i}>
+          <div className="card border-primary mb-3">
+            <div className="card-body">
+              <div className='d-flex justify-content-between align-items-center'>
+                <p className="card-title m-0">{institucion}</p>
+                <div className='d-flex justify-content-between align-items-center'>
+                  <Link to={`/gConsejos/${consecutivo}`}><i className="far fa-eye fa-lg ml-2 consejo-icon" style={{ color: "navy" }}></i></Link>
                 </div>
               </div>
               <p className='m-0'>{escuela}</p>
@@ -130,8 +190,23 @@ export default class VisualizarConsejos extends Component {
           {this.state.consejos.length === 0 ? <p className='my-muted'>No hay próximos consejos para mostrar</p> : this.councilList()}
         </div>
         <div className='container'>
-          <h4>Consejos anteriores</h4>
-          <hr />
+          {this.state.anteriores.length > 0 &&
+            <>
+              <div className='d-flex justify-content-between'>
+                <h4>Consejos anteriores</h4>
+                <form className='form-inline' onSubmit={this.handleSubmit}>
+                  <input type="text" required maxLength="10" name="consecutivo"
+                    placeholder="Buscar por consecutivo" autoComplete="off" className="form-control my-input"
+                    onChange={this.handleInputChange} value={this.state.consecutivo} />
+                  <i className="fas fa-search fa-lg ml-2 my-icon"></i>
+                </form>
+              </div>
+              <hr />
+            </>
+          }
+        </div>
+        <div className="row m-0 mt-4">
+          {this.previousCouncilList()}
         </div>
       </>
     );

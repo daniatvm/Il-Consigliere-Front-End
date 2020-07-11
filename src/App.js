@@ -9,6 +9,7 @@ import RegistroConsejos from './components/Consejos/RegistroConsejos';
 import Convocar from './components/Consejos/Convocar';
 import VisualizarConsejos from './components/Consejos/VisualizarConsejos';
 import EditarConsejo from './components/Consejos/EditarConsejo';
+import ConsejoVotacion from './components/Consejos/ConsejoVotacion';
 import ListaUsuarios from './components/Usuarios/ListaUsuarios';
 import Registro from './components/Usuarios/Registro';
 import Usuario from './components/Usuarios/Usuario';
@@ -24,7 +25,8 @@ function App() {
         <Route path='/gUsuarios/registro/:token' component={Registro} />
         <ProtectedRoute path='/gConsejos/registro' role={Role.CouncilModifier} component={RegistroConsejos} />
         <ProtectedRoute path='/gConsejos/participantes/:consecutivo' role={Role.CouncilModifier} component={Convocar} />
-        <ProtectedRoute path='/gConsejos/:consecutivo' role={Role.CouncilModifier} component={EditarConsejo} />
+        <ProtectedRoute path='/gConsejos/editar/:consecutivo' role={Role.CouncilModifier} component={EditarConsejo} />
+        <ProtectedRoute path='/gConsejos/:consecutivo' role={Role.CouncilModifier} component={ConsejoVotacion} />
         <ProtectedRoute path='/gConsejos' role={Role.CouncilModifier} component={VisualizarConsejos} />
         <ProtectedRoute path='/gUsuarios/:cedula' exact role={Role.UserModifier} component={Usuario} />
         <ProtectedRoute path='/gUsuarios' exact role={Role.UserModifier} component={ListaUsuarios} />
