@@ -111,6 +111,7 @@ export default class Usuario extends Component {
         .catch((err) => console.log(err));
     } else {
       this.setState({
+        isLoading: false,
         encontrado: false
       });
     }
@@ -152,7 +153,7 @@ export default class Usuario extends Component {
     } catch (err) {
       console.log(err);
     }
-    this.props.history.push('/gUsuarios/usuarios');
+    this.props.history.push('/gUsuarios');
   }
 
   getEmails() {

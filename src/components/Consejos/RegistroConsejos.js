@@ -7,7 +7,7 @@ import { myAlert } from '../../helpers/alert';
 import { getTodaysDate } from '../../helpers/todaysDate';
 import './Consejos.css';
 
-const puntos = [];
+let puntos = [];
 
 export default class RegistroConsejos extends Component {
   constructor(props) {
@@ -103,6 +103,7 @@ export default class RegistroConsejos extends Component {
                 axios.post('/consejo', consejo)
                   .then(res => {
                     if (res.data.success) {
+                      puntos = [];
                       this.props.history.push('/gConsejos');
                     } else {
                       myAlert('Oh no!', 'Error interno del servidor.', 'error');
@@ -210,7 +211,7 @@ export default class RegistroConsejos extends Component {
                           <textarea placeholder='Punto de agenda (opcional)' maxLength="800" name='punto' className="form-control mr-2" onChange={this.handleInputChange} value={this.state.punto} />
                           <i className="fas fa-plus-square my-icon fa-lg" onClick={(e) => this.addDiscussion(e)} />
                         </div>
-                        <div className='punto-container mt-2'>
+                        <div className='punto-nuevo mt-2'>
                           {this.getDiscussions()}
                         </div>
                       </div>

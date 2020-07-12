@@ -3,20 +3,17 @@ import { Redirect, Link } from 'react-router-dom';
 import axios from 'axios';
 import swal from 'sweetalert';
 import Navegacion from '../Navegacion/Navegacion';
+import BuscadorConsejos from './BuscadorConsejos';
 import auth from '../../helpers/auth';
 
 export default class VisualizarConsejos extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
-      consecutivo: '',
       consejos: [],
       anteriores: [],
       redirect: false
     }
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount() {
@@ -94,18 +91,6 @@ export default class VisualizarConsejos extends Component {
       .catch((err) => console.log(err));
   }
 
-  handleInputChange(e) {
-    let value = e.target.value;
-    let name = e.target.name;
-    this.setState({
-      [name]: value
-    });
-  }
-
-  handleSubmit(e) {
-    e.preventDefault();
-  }
-
   councilList() {
     const councils = [];
     for (let i = 0; i < this.state.consejos.length; i++) {
@@ -120,7 +105,7 @@ export default class VisualizarConsejos extends Component {
       councils.push(
         <div className="col-md-4" key={i}>
           <div className="card border-primary mb-3">
-            <div className="card-body">
+            <div className="card-body p-2">
               <div className='d-flex justify-content-between align-items-center'>
                 <p className="card-title m-0">{institucion}</p>
                 <div className='d-flex justify-content-between align-items-center'>
@@ -157,11 +142,11 @@ export default class VisualizarConsejos extends Component {
       councils.push(
         <div className="col-md-4" key={i}>
           <div className="card border-primary mb-3">
-            <div className="card-body">
+            <div className="card-body p-2">
               <div className='d-flex justify-content-between align-items-center'>
                 <p className="card-title m-0">{institucion}</p>
                 <div className='d-flex justify-content-between align-items-center'>
-                  <Link to={`/gConsejos/${consecutivo}`}><i className="far fa-eye fa-lg ml-2 consejo-icon" style={{ color: "navy" }}></i></Link>
+                  <Link to={`/gConsejos/${consecutivo}`}><i className="far fa-eye fa-lg ml-2" style={{ color: "navy" }}></i></Link>
                 </div>
               </div>
               <p className='m-0'>{escuela}</p>
@@ -192,21 +177,16 @@ export default class VisualizarConsejos extends Component {
         <div className='container'>
           {this.state.anteriores.length > 0 &&
             <>
-              <div className='d-flex justify-content-between'>
-                <h4>Consejos anteriores</h4>
-                <form className='form-inline' onSubmit={this.handleSubmit}>
-                  <input type="text" required maxLength="10" name="consecutivo"
-                    placeholder="Buscar por consecutivo" autoComplete="off" className="form-control my-input"
-                    onChange={this.handleInputChange} value={this.state.consecutivo} />
-                  <i className="fas fa-search fa-lg ml-2 my-icon"></i>
-                </form>
-              </div>
+              <h4>Consejos anteriores</h4>
               <hr />
             </>
           }
         </div>
         <div className="row m-0 mt-4">
           {this.previousCouncilList()}
+        </div>
+        <div className='d-flex justify-content-around align-items-center'>
+          <BuscadorConsejos admin={true} />
         </div>
       </>
     );

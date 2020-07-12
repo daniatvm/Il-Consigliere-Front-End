@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import axios from 'axios';
 import Convocados from './Convocados';
 import Navegacion from '../Navegacion/Navegacion';
@@ -8,6 +8,7 @@ import DefaultComponent from '../../helpers/DefaultComponent';
 import { Loading } from '../../helpers/Loading';
 import './Consejos.css';
 import roles from '../../helpers/roles';
+import { getTodaysDate } from '../../helpers/todaysDate';
 
 export default class Consejos extends Component {
 
@@ -106,6 +107,9 @@ export default class Consejos extends Component {
                 }
               })
               .catch((err) => console.log(err));
+            this.setState({
+              punto: ''
+            })
           } else {
             this.setState({
               redirect: true
@@ -141,6 +145,7 @@ export default class Consejos extends Component {
           <div className="col-md-10 m-auto">
             <div className="card border-primary consejo-card">
               <div className="card-body">
+                <Link to='/consejos'><i className="fas fa-times fa-lg m-2 ubicar-salida" style={{ color: 'navy' }}></i></Link>
                 <div className='todo-registro'>
                   <div className='registro-container izq'>
                     <p className="card-title text-center text-uppercase m-0">{this.state.consejo.institucion}</p>
@@ -156,8 +161,8 @@ export default class Consejos extends Component {
                   </div>
                   <div className='registro-container der'>
                     <p>Puntos de Agenda:</p>
-                    <div className={!this.state.isCouncilModifier ? 'punto-space' : 'punto-nonspace'}>
-                      <ol className='pl-3'>
+                    <div className={this.state.isCouncilModifier ? 'punto-nonspace' : this.state.consejo.fecha < getTodaysDate() ? 'punto-nonspace' : 'punto-consejo'}>
+                      <ol className='pl-4'>
                         {this.getDiscussions()}
                       </ol>
                     </div>
@@ -172,7 +177,7 @@ export default class Consejos extends Component {
                             </div>
                           </div>
                           <div className='solicitud-container'>
-                            <ol className='pl-3'>
+                            <ol className='pl-4'>
                               {this.getRequests()}
                             </ol>
                           </div>

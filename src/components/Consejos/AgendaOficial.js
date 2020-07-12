@@ -117,8 +117,8 @@ export default class AgendaOficial extends Component {
             <textarea placeholder='Punto de agenda (opcional)' maxLength="800" name='punto' className="form-control mr-2" onChange={this.handleInputChange} value={this.state.punto} />
             <i className="fas fa-plus-square my-icon fa-lg" onClick={(e) => this.addDiscussion(e)} />
           </div>
-          <div className='punto-container mt-2'>
-            <ol className='pl-3'>
+          <div className='punto-editable mt-2'>
+            <ol className='pl-4'>
               {this.getDiscussions()}
             </ol>
           </div>

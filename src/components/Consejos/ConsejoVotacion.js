@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import axios from 'axios';
 import Convocados from './Convocados';
 import Navegacion from '../Navegacion/Navegacion';
@@ -89,6 +89,7 @@ export default class Consejos extends Component {
           <div className="col-md-10 m-auto">
             <div className="card border-primary consejo-card">
               <div className="card-body">
+              <Link to='/gConsejos'><i className="fas fa-times fa-lg m-2 ubicar-salida" style={{ color: 'navy' }}></i></Link>
                 <div className='todo-registro'>
                   <div className='registro-container izq'>
                     <p className="card-title text-center text-uppercase m-0">{this.state.consejo.institucion}</p>
@@ -103,9 +104,9 @@ export default class Consejos extends Component {
                     <Convocados consecutivo={this.state.consecutivo} />
                   </div>
                   <div className='registro-container der'>
-                    <p>Puntos de Agenda:</p>
-                    <div className='h-auto'>
-                      <ol className='pl-3'>
+                      <p>Puntos de Agenda:</p>
+                    <div className='punto-nonspace'>
+                      <ol className='pl-4'>
                         {this.getDiscussions()}
                       </ol>
                     </div>

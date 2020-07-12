@@ -7,7 +7,17 @@
 }
 
 .punto-container {
+    height: inherit;
+    overflow: auto;
+}
+
+.punto-consejo {
     height: 250px;
+    overflow: auto;
+}
+
+.convocados {
+    height: 220px;
     overflow: auto;
 }
 
@@ -42,7 +52,7 @@
 }
 
 .solicitud-container {
-    height: 15vh;
+    height: 100px;
     overflow: auto;
 }
 
@@ -64,8 +74,24 @@
     height: auto;
 }
 
-.my-input{
-  height: 20px;
+.my-input {
+    height: 20px;
+}
+
+.ubicar-salida {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.punto-editable {
+    height: 300px;
+    overflow: auto;
+}
+
+.punto-nuevo {
+    height: 250px;
+    overflow: auto;
 }
 
 @media only screen and (max-width: 900px) {

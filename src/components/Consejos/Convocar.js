@@ -7,9 +7,6 @@ import auth from '../../helpers/auth';
 import './Consejos.css';
 
 let convocados = [];
-let convAntCantidad = 0;
-let usuariosCantidad = 0;
-let seleccionarTodos = false;
 
 export default class Convocar extends Component {
 
@@ -20,6 +17,7 @@ export default class Convocar extends Component {
       usuarios: [],
       convocadosAnteriormente: [],
       convocados: [],
+      seleccionarTodos: false,
       redirect: false
     };
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -28,9 +26,12 @@ export default class Convocar extends Component {
   }
 
   componentDidMount() {
+    convocados = [];
     auth.verifyToken()
       .then(value => {
         if (value) {
+          let convAntCantidad = 0;
+          let usuariosCantidad = 0;
           let convAnt = [];
           let usuarios = [];
           axios.get('/usuario')
@@ -49,23 +50,26 @@ export default class Convocar extends Component {
                       });
                       convAntCantidad = res.data.convocados.length;
                       convAnt = res.data.convocados;
-                      convocados = Array(usuariosCantidad).fill(false);
-                      if (convAntCantidad !== 0) {
-                        for (let i = 0; i < usuariosCantidad; i++) {
-                          for (let j = 0; j < convAntCantidad; j++) {
-                            if (usuarios[i].cedula === convAnt[j].cedula) {
-                              convocados[i] = true;
-                            }
-                          }
-                        }
-                        this.setState({
-                          convocados: convocados
-                        });
-                      } else if (convAntCantidad === usuariosCantidad) {
+                      if (convAntCantidad === usuariosCantidad) {
                         convocados = Array(usuariosCantidad).fill(true);
                         this.setState({
-                          convocados: convocados
+                          convocados: convocados,
+                          seleccionarTodos: true
                         });
+                      } else {
+                        convocados = Array(usuariosCantidad).fill(false);
+                        if (convAntCantidad !== 0) {
+                          for (let i = 0; i < usuariosCantidad; i++) {
+                            for (let j = 0; j < convAntCantidad; j++) {
+                              if (usuarios[i].cedula === convAnt[j].cedula) {
+                                convocados[i] = true;
+                              }
+                            }
+                          }
+                          this.setState({
+                            convocados: convocados
+                          });
+                        }
                       }
                     }
                   })
@@ -87,11 +91,13 @@ export default class Convocar extends Component {
     const value = e.target.checked;
     const name = e.target.name;
     if (name === 'seleccionarTodos') {
-      seleccionarTodos = !seleccionarTodos;
-      if (seleccionarTodos) {
-        convocados = Array(usuariosCantidad).fill(true);
+      this.setState({
+        seleccionarTodos: value
+      })
+      if (value) {
+        convocados = Array(this.state.usuarios.length).fill(true);
       } else {
-        convocados = Array(usuariosCantidad).fill(false);
+        convocados = Array(this.state.usuarios.length).fill(false);
       }
     } else {
       convocados[name] = value;
@@ -119,6 +125,7 @@ export default class Convocar extends Component {
             await axios.delete(`/convocado/por_consejo/${this.state.consecutivo}`);
             const res = await axios.post('/convocado', { convocados: convoque, consecutivo: this.state.consecutivo });
             if (res.data.success) {
+              convocados = [];
               myAlert('Éxito', 'Se han convocado todos los usuarios que se escogieron.', 'success');
               this.props.history.push('/gConsejos');
             } else {
@@ -167,7 +174,7 @@ export default class Convocar extends Component {
                   <div className='form-group convocado-div'>
                     <div className="custom-control custom-checkbox">
                       <input type="checkbox" className="custom-control-input" id='default' name="seleccionarTodos"
-                        checked={seleccionarTodos} onChange={this.handleInputChange} />
+                        checked={this.state.seleccionarTodos} onChange={this.handleInputChange} />
                       <label className="custom-control-label" htmlFor='default'>Seleccionar todos los usuarios</label>
                       <hr />
                     </div>
