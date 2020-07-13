@@ -109,8 +109,8 @@ export default class VisualizarConsejos extends Component {
               <div className='d-flex justify-content-between align-items-center'>
                 <p className="card-title m-0">{institucion}</p>
                 <div className='d-flex justify-content-between align-items-center'>
-                  <Link to={`/gConsejos/participantes/${consecutivo}`}><i className="fas fa-user-cog fa-lg ml-2 consejo-icon" style={{ color: "navy" }}></i></Link>
-                  <Link to={`/gConsejos/editar/${consecutivo}`}><i className="fas fa-edit fa-lg ml-2 consejo-icon" style={{ color: "navy" }}></i></Link>
+                  <Link to={`/gConsejos/participantes/${consecutivo}`}><i className="fas fa-user-cog fa-lg ml-2" style={{ color: "navy" }}></i></Link>
+                  <Link to={`/gConsejos/editar/${consecutivo}`}><i className="fas fa-edit fa-lg ml-2" style={{ color: "navy" }}></i></Link>
                   <i className="fas fa-trash-alt my-icon fa-lg ml-2" onClick={(e) => this.deleteCouncil(e, consecutivo)} />
                 </div>
               </div>

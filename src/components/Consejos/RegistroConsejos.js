@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import Navegacion from '../Navegacion/Navegacion';
 import axios from 'axios';
 import auth from '../../helpers/auth';
@@ -217,9 +217,13 @@ export default class RegistroConsejos extends Component {
                       </div>
                     </div>
                   </div>
-                  <div className="form-group d-flex justify-content-center">
-                    <button type="submit" className="btn btn-outline-primary mt-4 consejo-button">Crear Consejo</button>
+                  <div className="form-group d-flex justify-content-around">
+                    <button type="submit" className="btn btn-outline-primary mt-4 editar-button">Crear Consejo</button>
+                    <Link className="btn btn-outline-secondary mt-4 editar-button" to='/gConsejos'>Cancelar</Link>
                   </div>
+                  {/* <div className="form-group d-flex justify-content-center">
+                    <button type="submit" className="btn btn-outline-primary mt-4 consejo-button">Crear Consejo</button>
+                  </div> */}
                 </form>
               </div>
             </div>

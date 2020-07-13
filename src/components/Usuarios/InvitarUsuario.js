@@ -157,7 +157,7 @@ export default class InvitarUsuario extends Component {
       <>
         <button type="button" className="btn btn-outline-primary py-0 altura-button" data-toggle="modal" data-target="#invitar">
           Invita a un usuario
-                </button>
+        </button>
         <div className="modal fade" id="invitar" role="dialog">
           <div className="modal-dialog modal-dialog-centered" role="document">
             <div className="modal-content modal-border">
