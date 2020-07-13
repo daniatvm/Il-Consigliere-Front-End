@@ -69,6 +69,10 @@ export default class VisualizarConsejos extends Component {
                 this.setState({
                   consejos: res.data.councils
                 });
+              } else {
+                this.setState({
+                  consejos: []
+                });
               }
             })
             .catch((err) => console.log(err));
@@ -168,11 +172,15 @@ export default class VisualizarConsejos extends Component {
       <>
         <Navegacion />
         <div className='container'>
-          <h4>Próximos Consejos</h4>
-          <hr />
+          {this.state.consejos.length === 0 ? <p className='my-muted text-center'>No hay próximos consejos para mostrar</p> :
+            <>
+              <h4>Próximos Consejos</h4>
+              <hr />
+            </>
+          }
         </div>
         <div className="row m-0 mt-4">
-          {this.state.consejos.length === 0 ? <p className='my-muted'>No hay próximos consejos para mostrar</p> : this.councilList()}
+          {this.councilList()}
         </div>
         <div className='container'>
           {this.state.anteriores.length > 0 &&
@@ -185,9 +193,11 @@ export default class VisualizarConsejos extends Component {
         <div className="row m-0 mt-4">
           {this.previousCouncilList()}
         </div>
-        <div className='d-flex justify-content-around align-items-center'>
-          <BuscadorConsejos admin={true} />
-        </div>
+        {this.state.anteriores.length > 0 &&
+          <div className='d-flex justify-content-around align-items-center'>
+            <BuscadorConsejos admin={true} />
+          </div>
+        }
       </>
     );
   }

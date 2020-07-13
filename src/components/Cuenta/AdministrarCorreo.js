@@ -33,8 +33,7 @@ export default class AdministrarCorreo extends Component {
                 this.setState({
                   correos: res.data.emails
                 });
-              }
-              else {
+              } else {
                 this.setState({
                   correos: []
                 })

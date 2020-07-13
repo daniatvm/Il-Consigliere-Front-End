@@ -104,7 +104,7 @@ export default class Acceso extends Component {
             </div>
             <div className="alert alert-dismissible my-border alert-light pb-0">
               <button type="button" className="close" data-dismiss="alert">&times;</button>
-              <p>Recuerda solicitar una cuenta a la persona encargada del sistema.</p>
+              <p>Recuerda solicitar una invitación para crear tu cuenta previamente.</p>
             </div>
           </div>
         </div>
