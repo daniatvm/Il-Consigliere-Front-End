@@ -6,8 +6,6 @@ import { myAlert } from '../../helpers/alert';
 import auth from '../../helpers/auth';
 import './Consejos.css';
 
-let convocados = [];
-
 export default class Convocar extends Component {
 
   constructor(props) {
@@ -16,7 +14,7 @@ export default class Convocar extends Component {
       consecutivo: this.props.match.params.consecutivo,
       usuarios: [],
       convocadosAnteriormente: [],
-      convocados: [],
+      convocados: new Map(),
       seleccionarTodos: false,
       redirect: false
     };
@@ -26,7 +24,6 @@ export default class Convocar extends Component {
   }
 
   componentDidMount() {
-    convocados = [];
     auth.verifyToken()
       .then(value => {
         if (value) {
@@ -51,26 +48,22 @@ export default class Convocar extends Component {
                       convAntCantidad = res.data.convocados.length;
                       convAnt = res.data.convocados;
                       if (convAntCantidad === usuariosCantidad) {
-                        convocados = Array(usuariosCantidad).fill(true);
                         this.setState({
-                          convocados: convocados,
                           seleccionarTodos: true
                         });
-                      } else {
-                        convocados = Array(usuariosCantidad).fill(false);
-                        if (convAntCantidad !== 0) {
-                          for (let i = 0; i < usuariosCantidad; i++) {
-                            for (let j = 0; j < convAntCantidad; j++) {
-                              if (usuarios[i].cedula === convAnt[j].cedula) {
-                                convocados[i] = true;
-                              }
-                            }
+                      }
+                      let convocados = new Map();
+                      for (let i = 0; i < usuariosCantidad; i++) {
+                        convocados.set(usuarios[i].cedula, false);
+                        for (let j = 0; j < convAntCantidad; j++) {
+                          if (usuarios[i].cedula === convAnt[j].cedula) {
+                            convocados.set(usuarios[i].cedula, true);
                           }
-                          this.setState({
-                            convocados: convocados
-                          });
                         }
                       }
+                      this.setState({
+                        convocados: convocados
+                      });
                     }
                   })
                   .catch((err) => console.log(err));
@@ -88,23 +81,33 @@ export default class Convocar extends Component {
   }
 
   handleInputChange(e) {
-    const value = e.target.checked;
     const name = e.target.name;
+    const value = e.target.checked;
     if (name === 'seleccionarTodos') {
       this.setState({
         seleccionarTodos: value
-      })
+      });
+      let convocados = new Map();
       if (value) {
-        convocados = Array(this.state.usuarios.length).fill(true);
+        let arrVerdaderos = Array(this.state.usuarios.length).fill(true);
+        this.state.usuarios.map((e, i) => {
+          return convocados.set(e.cedula, arrVerdaderos[i]);
+        });
       } else {
-        convocados = Array(this.state.usuarios.length).fill(false);
+        let arrFalsos = Array(this.state.usuarios.length).fill(false);
+        this.state.usuarios.map((e, i) => {
+          return convocados.set(e.cedula, arrFalsos[i]);
+        });
       }
+      this.setState({
+        convocados: convocados
+      });
     } else {
-      convocados[name] = value;
+      let convocados = this.state.convocados;
+      let values = convocados.set(name, value).values();
+      this.checkSelectAll(values);
+      this.setState(prevState => ({ convocados: prevState.convocados.set(name, value) }));
     }
-    this.setState({
-      convocados: convocados
-    });
   }
 
   handleSubmit(e) {
@@ -113,11 +116,10 @@ export default class Convocar extends Component {
       .then(async value => {
         if (value) {
           const convoque = [];
-          for (let i = 0; i < convocados.length; i++) {
-            if (convocados[i]) {
-              let { cedula } = this.state.usuarios[i]
+          for (let [key, value] of this.state.convocados.entries()) {
+            if (value) {
               convoque.push({
-                cedula: cedula
+                cedula: key
               });
             }
           }
@@ -125,7 +127,6 @@ export default class Convocar extends Component {
             await axios.delete(`/convocado/por_consejo/${this.state.consecutivo}`);
             const res = await axios.post('/convocado', { convocados: convoque, consecutivo: this.state.consecutivo });
             if (res.data.success) {
-              convocados = [];
               myAlert('Éxito', 'Se han convocado todos los usuarios que se escogieron.', 'success');
               this.props.history.push('/gConsejos');
             } else {
@@ -144,6 +145,25 @@ export default class Convocar extends Component {
       .catch((err) => console.log(err));
   }
 
+  checkSelectAll(values) {
+    for (let value of values) {
+      if (!value) {
+        if (this.state.seleccionarTodos) {
+          this.setState({
+            seleccionarTodos: false
+          });
+        }
+        return;
+      }
+    }
+    if (!this.state.seleccionarTodos) {
+      this.setState({
+        seleccionarTodos: true
+      });
+    }
+    return;
+  }
+
   getUsers() {
     const users = [];
     for (let i = 0; i < this.state.usuarios.length; i++) {
@@ -152,8 +172,8 @@ export default class Convocar extends Component {
       let apellido = this.state.usuarios[i].apellido;
       users.push(
         <div className="custom-control custom-checkbox" key={i}>
-          <input type="checkbox" className="custom-control-input" id={cedula} name={i}
-            checked={convocados[i]} onChange={this.handleInputChange} />
+          <input type="checkbox" className="custom-control-input" id={cedula} name={cedula}
+            checked={!!this.state.convocados.get(cedula)} onChange={this.handleInputChange} />
           <label className="custom-control-label" htmlFor={cedula}>{nombre} {apellido}</label>
         </div>
       );

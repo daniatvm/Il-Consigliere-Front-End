@@ -17,6 +17,7 @@ export default class AgendaOficial extends Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.addDiscussion = this.addDiscussion.bind(this);
     this.deleteDiscussion = this.deleteDiscussion.bind(this);
+    this.handleUpdate = this.handleUpdate.bind(this);
   }
 
   componentDidMount() {
@@ -43,7 +44,8 @@ export default class AgendaOficial extends Component {
     });
   }
 
-  addDiscussion() {
+  addDiscussion(e) {
+    e.preventDefault();
     if (this.state.punto !== '') {
       auth.verifyToken()
         .then(value => {
@@ -91,6 +93,10 @@ export default class AgendaOficial extends Component {
       .catch((err) => console.log(err));
   }
 
+  handleUpdate() {
+    this.getDiscussionsFromBD();
+  }
+
   getDiscussions() {
     const discussions = [];
     for (let i = 0; i < this.state.puntos.length; i++) {
@@ -110,7 +116,7 @@ export default class AgendaOficial extends Component {
       <>
         <div className='d-flex justify-content-center'>
           <p className='text-center pr-4'>Puntos de Agenda Oficiales</p>
-          <SolicitudAgenda consecutivo={this.state.consecutivo} />
+          <SolicitudAgenda consecutivo={this.state.consecutivo} updateParent={this.handleUpdate} />
         </div>
         <div className="form-group">
           <div className='d-flex align-items-center'>

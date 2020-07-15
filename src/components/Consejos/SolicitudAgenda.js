@@ -30,6 +30,10 @@ export default class SolicitudAgenda extends Component {
                 this.setState({
                   solicitudes: res.data.discussions
                 });
+              } else {
+                this.setState({
+                  solicitudes: []
+                });
               }
             })
             .catch((err) => console.log(err));
@@ -52,6 +56,7 @@ export default class SolicitudAgenda extends Component {
             .then(res => {
               if (res.data.success) {
                 this.getRequestsFromDB();
+                this.props.updateParent();
               }
             })
             .catch((err) => console.log(err));
@@ -71,11 +76,11 @@ export default class SolicitudAgenda extends Component {
       let request = this.state.solicitudes[i];
       requests.push(
         <div className='d-flex justify-content-between align-items-center my-2' key={i}>
-          <p className='text-justify'>{request.nombre + ' ' + request.apellido}: {request.asunto}</p>
-          <div className='d-flex justify-content-between align-items-center'>
-            <i className="far fa-check-circle fa-lg ml-2 my-success" onClick={(e) => this.acceptDiscussion(e, request.id_punto)}></i>
-            {/* <i className="far fa-times-circle fa-lg my-danger" onClick={(e) => this.discardDiscussion(e, request.id_punto)}></i> */}
-          </div>
+          <p className='m-0 text-justify'>{request.nombre + ' ' + request.apellido}: {request.asunto}</p>
+          {/* <div className='d-flex justify-content-between align-items-center'> */}
+          <i className="far fa-check-circle fa-lg ml-2 my-success" onClick={(e) => this.acceptDiscussion(e, request.id_punto)}></i>
+          {/* <i className="far fa-times-circle fa-lg my-danger" onClick={(e) => this.discardDiscussion(e, request.id_punto)}></i> */}
+          {/* </div> */}
         </div>
       );
     }
