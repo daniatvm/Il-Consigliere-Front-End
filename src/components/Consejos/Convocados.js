@@ -85,7 +85,7 @@ export default class Convocados extends Component {
           {this.state.docentes.length > 0 &&
             <>
               <p className='m-0'>Personal Docente:</p>
-              <ol className='pl-4'>
+              <ol className='pl-4 m-1'>
                 {this.getTeachers()}
               </ol>
             </>
@@ -93,7 +93,7 @@ export default class Convocados extends Component {
           {this.state.administrativo.length > 0 &&
             <>
               <p className='m-0'>Personal administrativo:</p>
-              <ol className='pl-4'>
+              <ol className='pl-4 m-1'>
                 {this.getAdmin()}
               </ol>
             </>
@@ -101,7 +101,7 @@ export default class Convocados extends Component {
           {this.state.estudiantes.length > 0 &&
             <>
               <p className='m-0'>Estudiantes:</p>
-              <ol className='pl-4'>
+              <ol className='pl-4 m-1'>
                 {this.getStudents()}
               </ol>
             </>

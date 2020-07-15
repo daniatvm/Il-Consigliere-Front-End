@@ -162,7 +162,7 @@ export default class Consejos extends Component {
                   <div className='registro-container der'>
                     <p>Puntos de Agenda:</p>
                     <div className={this.state.isCouncilModifier ? 'punto-nonspace' : this.state.consejo.fecha < getTodaysDate() ? 'punto-nonspace' : 'punto-consejo'}>
-                      <ol className='pl-4'>
+                      <ol className='pl-4 m-0'>
                         {this.getDiscussions()}
                       </ol>
                     </div>
@@ -177,7 +177,7 @@ export default class Consejos extends Component {
                             </div>
                           </div>
                           <div className='solicitud-container'>
-                            <ol className='pl-4'>
+                            <ol className='pl-4 m-0'>
                               {this.getRequests()}
                             </ol>
                           </div>

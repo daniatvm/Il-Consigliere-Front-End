@@ -124,7 +124,7 @@ export default class AgendaOficial extends Component {
             <i className="fas fa-plus-square my-icon fa-lg" onClick={(e) => this.addDiscussion(e)} />
           </div>
           <div className='punto-editable mt-2'>
-            <ol className='pl-4'>
+            <ol className='pl-4 m-0'>
               {this.getDiscussions()}
             </ol>
           </div>

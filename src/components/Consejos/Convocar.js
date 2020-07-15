@@ -13,7 +13,6 @@ export default class Convocar extends Component {
     this.state = {
       consecutivo: this.props.match.params.consecutivo,
       usuarios: [],
-      convocadosAnteriormente: [],
       convocados: new Map(),
       seleccionarTodos: false,
       redirect: false
@@ -39,12 +38,13 @@ export default class Convocar extends Component {
                 });
                 usuariosCantidad = res.data.users.length;
                 usuarios = res.data.users;
+                let convocados = new Map();
+                for (let i = 0; i < usuariosCantidad; i++) {
+                  convocados.set(usuarios[i].cedula, false);
+                }
                 axios.get(`/convocado/por_consejo/${this.state.consecutivo}`)
                   .then(res => {
                     if (res.data.success) {
-                      this.setState({
-                        convocadosAnteriormente: res.data.convocados
-                      });
                       convAntCantidad = res.data.convocados.length;
                       convAnt = res.data.convocados;
                       if (convAntCantidad === usuariosCantidad) {
@@ -52,19 +52,17 @@ export default class Convocar extends Component {
                           seleccionarTodos: true
                         });
                       }
-                      let convocados = new Map();
                       for (let i = 0; i < usuariosCantidad; i++) {
-                        convocados.set(usuarios[i].cedula, false);
                         for (let j = 0; j < convAntCantidad; j++) {
                           if (usuarios[i].cedula === convAnt[j].cedula) {
                             convocados.set(usuarios[i].cedula, true);
                           }
                         }
                       }
-                      this.setState({
-                        convocados: convocados
-                      });
                     }
+                    this.setState({
+                      convocados: convocados
+                    });
                   })
                   .catch((err) => console.log(err));
               }
