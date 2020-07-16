@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import Navegacion from '../Navegacion/Navegacion';
+import AgendaOficial from './AgendaOficial';
 import axios from 'axios';
 import auth from '../../helpers/auth';
-import { getTodaysDate } from '../../helpers/todaysDate';
+import { getTodaysDate } from '../../helpers/dates';
 import { Loading } from '../../helpers/Loading';
 import { Redirect, Link } from 'react-router-dom';
 import DefaultComponent from '../../helpers/DefaultComponent';
 import './Consejos.css';
-import AgendaOficial from './AgendaOficial';
 
 export default class EditarConsejo extends Component {
   constructor(props) {

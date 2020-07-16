@@ -4,7 +4,7 @@ import axios from 'axios';
 import Navegacion from '../Navegacion/Navegacion';
 import BuscadorConsejos from './BuscadorConsejos';
 import auth from '../../helpers/auth';
-import { getTodaysDate } from '../../helpers/todaysDate';
+import { getTodaysDate } from '../../helpers/dates';
 
 export default class Consejos extends Component {
   constructor(props) {

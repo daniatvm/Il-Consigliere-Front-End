@@ -77,10 +77,11 @@ export default class SolicitudAgenda extends Component {
       requests.push(
         <div className='d-flex justify-content-between align-items-center my-2' key={i}>
           <p className='m-0 text-justify'>{request.nombre + ' ' + request.apellido}: {request.asunto}</p>
-          {/* <div className='d-flex justify-content-between align-items-center'> */}
-          <i className="far fa-check-circle fa-lg ml-2 my-success" onClick={(e) => this.acceptDiscussion(e, request.id_punto)}></i>
-          {/* <i className="far fa-times-circle fa-lg my-danger" onClick={(e) => this.discardDiscussion(e, request.id_punto)}></i> */}
-          {/* </div> */}
+          <div className='d-flex justify-content-between align-items-center'>
+            <i className="fas fa-edit fa-lg ml-2 my-icon"></i>
+            <i className="far fa-check-circle fa-lg mx-2 my-success" onClick={(e) => this.acceptDiscussion(e, request.id_punto)}></i>
+            {/* <i className="far fa-times-circle fa-lg my-danger" onClick={(e) => this.discardDiscussion(e, request.id_punto)}></i> */}
+          </div>
         </div>
       );
     }

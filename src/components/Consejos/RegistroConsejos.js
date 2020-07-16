@@ -4,7 +4,7 @@ import Navegacion from '../Navegacion/Navegacion';
 import axios from 'axios';
 import auth from '../../helpers/auth';
 import { myAlert } from '../../helpers/alert';
-import { getTodaysDate } from '../../helpers/todaysDate';
+import { getTodaysDate } from '../../helpers/dates';
 import './Consejos.css';
 
 let puntos = [];

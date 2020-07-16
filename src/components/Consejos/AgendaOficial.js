@@ -31,6 +31,10 @@ export default class AgendaOficial extends Component {
           this.setState({
             puntos: resp.data.discussions
           });
+        } else {
+          this.setState({
+            puntos: []
+          });
         }
       })
       .catch((err) => console.log(err));

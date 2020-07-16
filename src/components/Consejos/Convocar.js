@@ -4,6 +4,7 @@ import Navegacion from '../Navegacion/Navegacion';
 import { Link } from 'react-router-dom';
 import { myAlert } from '../../helpers/alert';
 import auth from '../../helpers/auth';
+import { requestDay } from '../../helpers/dates';
 import './Consejos.css';
 
 export default class Convocar extends Component {
@@ -123,7 +124,7 @@ export default class Convocar extends Component {
           }
           try {
             await axios.delete(`/convocado/por_consejo/${this.state.consecutivo}`);
-            const res = await axios.post('/convocado', { convocados: convoque, consecutivo: this.state.consecutivo });
+            const res = await axios.post('/convocado', { convocados: convoque, consecutivo: this.state.consecutivo, limite_solicitud: requestDay() });
             if (res.data.success) {
               myAlert('Éxito', 'Se han convocado todos los usuarios que se escogieron.', 'success');
               this.props.history.push('/gConsejos');

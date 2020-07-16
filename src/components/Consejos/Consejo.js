@@ -6,9 +6,10 @@ import Navegacion from '../Navegacion/Navegacion';
 import auth from '../../helpers/auth';
 import DefaultComponent from '../../helpers/DefaultComponent';
 import { Loading } from '../../helpers/Loading';
-import './Consejos.css';
 import roles from '../../helpers/roles';
-import { getTodaysDate } from '../../helpers/todaysDate';
+import { getTodaysDate } from '../../helpers/dates';
+import './Consejos.css';
+import SolicitudAgendaConvocado from './SolicitudAgendaConvocado';
 
 export default class Consejos extends Component {
 
@@ -18,17 +19,12 @@ export default class Consejos extends Component {
       isLoading: true,
       consecutivo: this.props.match.params.consecutivo,
       consejo: {},
-      solicitudes: [],
       aprobados: [],
-      punto: '',
       isCouncilModifier: roles.isCouncilModifier(),
       cedula: auth.getInfo().cedula,
       encontrado: true,
       redirect: false
     }
-
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount() {
@@ -59,7 +55,6 @@ export default class Consejos extends Component {
               }
             })
             .catch((err) => console.log(err));
-          this.getRequestsFromBD();
         } else {
           this.setState({
             redirect: true
@@ -70,57 +65,6 @@ export default class Consejos extends Component {
       .catch((err) => console.log(err));
   }
 
-  getRequestsFromBD() {
-    axios.get(`/punto/solicitud/${this.state.cedula}/${this.state.consecutivo}`)
-      .then(res => {
-        if (res.data.success) {
-          this.setState({
-            solicitudes: res.data.discussions
-          });
-        }
-      })
-      .catch((err) => console.log(err));
-  }
-
-  handleInputChange(e) {
-    this.setState({
-      punto: e.target.value
-    });
-  }
-
-  handleSubmit(e) {
-    e.preventDefault();
-    if (this.state.punto !== '') {
-      auth.verifyToken()
-        .then(value => {
-          if (value) {
-            const info = {
-              id_tipo_punto: 2,
-              asunto: this.state.punto,
-              cedula: this.state.cedula,
-              consecutivo: this.state.consecutivo
-            };
-            axios.post('/punto', info)
-              .then(res => {
-                if (res.data.success) {
-                  this.getRequestsFromBD();
-                }
-              })
-              .catch((err) => console.log(err));
-            this.setState({
-              punto: ''
-            })
-          } else {
-            this.setState({
-              redirect: true
-            })
-            auth.logOut();
-          }
-        })
-        .catch((err) => console.log(err));
-    }
-  }
-
   getDiscussions() {
     const discussions = [];
     for (let i = 0; i < this.state.aprobados.length; i++) {
@@ -129,15 +73,8 @@ export default class Consejos extends Component {
     return discussions;
   }
 
-  getRequests() {
-    const requests = [];
-    for (let i = 0; i < this.state.solicitudes.length; i++) {
-      requests.push(<li className='m-0 text-justify' key={i}>{this.state.solicitudes[i].asunto}</li>);
-    }
-    return requests;
-  }
-
   render() {
+    const date = getTodaysDate();
     return (this.state.isLoading ? <Loading /> : this.state.redirect ? <Redirect to='/' /> : !this.state.encontrado ? <DefaultComponent /> :
       <>
         <Navegacion />
@@ -161,28 +98,13 @@ export default class Consejos extends Component {
                   </div>
                   <div className='registro-container der'>
                     <p>Puntos de Agenda:</p>
-                    <div className={this.state.isCouncilModifier ? 'punto-nonspace' : this.state.consejo.fecha < getTodaysDate() ? 'punto-nonspace' : 'punto-consejo'}>
+                    <div className={this.state.isCouncilModifier ? 'punto-nonspace' : this.state.consejo.fecha < date ? 'punto-nonspace' : this.state.consejo.limite_solicitud < date ? 'punto-nonspace' : 'punto-consejo'}>
                       <ol className='pl-4 m-0'>
                         {this.getDiscussions()}
                       </ol>
                     </div>
-                    {!this.state.isCouncilModifier &&
-                      <>
-                        <p>Solicita puntos de agenda</p>
-                        <form onSubmit={this.handleSubmit}>
-                          <div className="form-group">
-                            <div className='d-flex align-items-center'>
-                              <textarea placeholder='Punto de agenda (opcional)' maxLength="800" name='punto' className="form-control mr-2" onChange={this.handleInputChange} value={this.state.punto} />
-                              <i className="fas fa-plus-square my-icon fa-lg" onClick={(e) => this.handleSubmit(e)} />
-                            </div>
-                          </div>
-                          <div className='solicitud-container'>
-                            <ol className='pl-4 m-0'>
-                              {this.getRequests()}
-                            </ol>
-                          </div>
-                        </form>
-                      </>
+                    {!this.state.isCouncilModifier && this.state.consejo.fecha >= date && this.state.consejo.limite_solicitud >= date &&
+                      <SolicitudAgendaConvocado consecutivo={this.state.consecutivo} />
                     }
                   </div>
                 </div>
