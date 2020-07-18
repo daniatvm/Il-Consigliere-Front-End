@@ -142,9 +142,7 @@ export default class Consejos extends Component {
           {this.getPreviousCouncils()}
         </div>
         {this.state.anteriores.length > 0 &&
-          <div className='d-flex justify-content-around align-items-center'>
-            <BuscadorConsejos />
-          </div>
+          <BuscadorConsejos />
         }
       </>
     );

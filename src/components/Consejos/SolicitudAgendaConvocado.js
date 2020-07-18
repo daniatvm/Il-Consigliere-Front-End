@@ -128,12 +128,12 @@ export default class SolicitudAgendaConvocado extends Component {
   render() {
     return (this.state.redirect ? <Redirect to='/' /> :
       <>
-        <p>Solicita puntos de agenda</p>
+        <p className='mt-4'>Solicita puntos de agenda</p>
         <form onSubmit={this.handleSubmit}>
           <div className="form-group">
             <div className='d-flex align-items-center'>
-              <textarea placeholder='Punto de agenda (opcional)' maxLength="800" name='punto' className="form-control mr-2" onChange={this.handleInputChange} value={this.state.punto} />
-              <i className="fas fa-plus-square my-icon fa-lg" onClick={(e) => this.handleSubmit(e)} />
+              <textarea placeholder='Punto de agenda (opcional)' name='punto' className="form-control mr-2" onChange={this.handleInputChange} value={this.state.punto} />
+              <button className="my-button" type="button" onClick={this.handleSubmit}><i className="fas fa-plus-square my-icon fa-lg" /></button>
             </div>
           </div>
           <div className='solicitud-container'>

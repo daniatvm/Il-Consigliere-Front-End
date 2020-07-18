@@ -38,7 +38,7 @@ export default class CambioClave extends Component {
             axios.post('/usuario/verificar_clave', user)
               .then(res => {
                 if (res.data.success) {
-                  axios.post('/usuario/cambiar_clave', { clave: this.state.nueva, cedula: auth.getInfo.cedula })
+                  axios.post('/usuario/cambiar_clave', { clave: this.state.nueva, cedula: auth.getInfo().cedula })
                     .then(res => {
                       if (res.data.success) {
                         myAlert('Éxito', 'La contraseña se ha cambiado satisfactoriamente.', 'success');

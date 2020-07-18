@@ -21,7 +21,7 @@ export default class EditarConsejo extends Component {
       hora: '',
       hoy: getTodaysDate(),
       tipoSesion: [],
-      sesionSeleccionada: 0,
+      sesionSeleccionada: 1,
       encontrado: true,
       redirect: false
     }
@@ -140,15 +140,11 @@ export default class EditarConsejo extends Component {
           <div className="col-md-10 m-auto">
             <div className="card border-primary consejo-card">
               <div className="card-body">
+                <Link to='/gConsejos'><i className="fas fa-times fa-lg m-2 ubicar-salida" style={{ color: 'navy' }}></i></Link>
                 <form onSubmit={this.handleSubmit}>
                   <div className='todo-registro'>
                     <div className='registro-container izq'>
-                      <p className='text-center'>Edición Básica del Consejo {this.state.consecutivo}</p>
-                      {/* <div className="form-group">
-                        <input type="text" required maxLength="10" name="consecutivo"
-                          placeholder="Consecutivo" autoComplete="off" className="form-control"
-                          autoFocus onChange={this.handleInputChange} value={this.state.consecutivo} />
-                      </div> */}
+                      <p className='text-center m-0 mb-2'>Edición Básica del Consejo {this.state.consecutivo}</p>
                       <div className="form-group">
                         <input type="text" required maxLength="100" name="lugar" autoFocus
                           placeholder="Lugar" autoComplete="off" className="form-control"

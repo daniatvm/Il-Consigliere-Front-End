@@ -194,9 +194,7 @@ export default class VisualizarConsejos extends Component {
           {this.previousCouncilList()}
         </div>
         {this.state.anteriores.length > 0 &&
-          <div className='d-flex justify-content-around align-items-center'>
-            <BuscadorConsejos admin={true} />
-          </div>
+          <BuscadorConsejos admin={true} />
         }
       </>
     );

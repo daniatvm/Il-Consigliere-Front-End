@@ -118,14 +118,14 @@ export default class AgendaOficial extends Component {
   render() {
     return (this.state.redirect ? <Redirect to='/' /> :
       <>
-        <div className='d-flex justify-content-center'>
-          <p className='text-center pr-4'>Puntos de Agenda Oficiales</p>
+        <div className='d-flex justify-content-center align-items-center mb-2'>
+          <p className='text-center m-0 pr-2'>Puntos de Agenda Oficiales y Solicitudes de Agenda</p>
           <SolicitudAgenda consecutivo={this.state.consecutivo} updateParent={this.handleUpdate} />
         </div>
         <div className="form-group">
           <div className='d-flex align-items-center'>
-            <textarea placeholder='Punto de agenda (opcional)' maxLength="800" name='punto' className="form-control mr-2" onChange={this.handleInputChange} value={this.state.punto} />
-            <i className="fas fa-plus-square my-icon fa-lg" onClick={(e) => this.addDiscussion(e)} />
+            <textarea placeholder='Punto de agenda (opcional)' name='punto' className="form-control mr-2" onChange={this.handleInputChange} value={this.state.punto} />
+            <button className="my-button" type="button" onClick={this.addDiscussion}><i className="fas fa-plus-square my-icon fa-lg" /></button>
           </div>
           <div className='punto-editable mt-2'>
             <ol className='pl-4 m-0'>

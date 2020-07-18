@@ -9,11 +9,13 @@ export default class SolicitudAgenda extends Component {
     super(props);
     this.state = {
       consecutivo: this.props.consecutivo,
-      solicitudes: [],
+      solicitudes: new Map(),
       redirect: false
     }
 
+    this.makeEditable = this.makeEditable.bind(this);
     this.acceptDiscussion = this.acceptDiscussion.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
   }
 
   componentDidMount() {
@@ -27,12 +29,18 @@ export default class SolicitudAgenda extends Component {
           axios.get(`/punto/solicitud/${this.state.consecutivo}`)
             .then(res => {
               if (res.data.success) {
+                let solicitudes = new Map();
+                for (let i = 0; i < res.data.discussions.length; i++) {
+                  let solicitud = res.data.discussions[i];
+                  solicitud.editable = false;
+                  solicitudes.set(solicitud.id_punto, solicitud);
+                }
                 this.setState({
-                  solicitudes: res.data.discussions
+                  solicitudes: solicitudes
                 });
               } else {
                 this.setState({
-                  solicitudes: []
+                  solicitudes: new Map()
                 });
               }
             })
@@ -47,15 +55,38 @@ export default class SolicitudAgenda extends Component {
       .catch((err) => console.log(err));
   }
 
+  handleInputChange(e) {
+    let id_punto = parseInt(e.target.name);
+    let value = e.target.value;
+    let solicitud = this.state.solicitudes.get(id_punto);
+    solicitud.asunto = value;
+    this.setState(prevState => ({ solicitudes: prevState.solicitudes.set(id_punto, solicitud) }));
+  }
+
+  makeEditable(e, id_punto) {
+    e.preventDefault();
+    let solicitudes = this.state.solicitudes;
+    let solicitud = solicitudes.get(id_punto);
+    solicitud.editable = true;
+    solicitudes.set(id_punto, solicitud);
+    this.setState({
+      solicitudes: solicitudes
+    });
+  }
+
   acceptDiscussion(e, id_punto) {
     e.preventDefault();
     auth.verifyToken()
       .then(value => {
         if (value) {
-          axios.put(`/punto/${id_punto}`, { id_tipo_punto: 1 })
+          axios.put(`/punto/${id_punto}`, { id_tipo_punto: 1, asunto: this.state.solicitudes.get(id_punto).asunto })
             .then(res => {
               if (res.data.success) {
-                this.getRequestsFromDB();
+                let solicitudes = this.state.solicitudes;
+                solicitudes.delete(id_punto);
+                this.setState({
+                  solicitudes: solicitudes
+                });
                 this.props.updateParent();
               }
             })
@@ -72,18 +103,28 @@ export default class SolicitudAgenda extends Component {
 
   getRequests() {
     const requests = [];
-    for (let i = 0; i < this.state.solicitudes.length; i++) {
-      let request = this.state.solicitudes[i];
-      requests.push(
-        <div className='d-flex justify-content-between align-items-center my-2' key={i}>
-          <p className='m-0 text-justify'>{request.nombre + ' ' + request.apellido}: {request.asunto}</p>
-          <div className='d-flex justify-content-between align-items-center'>
-            <i className="fas fa-edit fa-lg ml-2 my-icon"></i>
-            <i className="far fa-check-circle fa-lg mx-2 my-success" onClick={(e) => this.acceptDiscussion(e, request.id_punto)}></i>
-            {/* <i className="far fa-times-circle fa-lg my-danger" onClick={(e) => this.discardDiscussion(e, request.id_punto)}></i> */}
+    for (let value of this.state.solicitudes.values()) {
+      if (value.editable) {
+        requests.push(
+          <div className='d-flex justify-content-between align-items-center my-2' key={value.id_punto}>
+            <div style={{ width: '95%' }}>
+              <p className='m-0 text-justify'>{value.nombre + ' ' + value.apellido}:</p>
+              <textarea name={value.id_punto} className="form-control" onChange={this.handleInputChange} value={value.asunto} style={{ width: 'inherited' }} />
+            </div>
+            <i className="far fa-check-circle fa-lg mx-2 my-icon" onClick={(e) => this.acceptDiscussion(e, value.id_punto)}></i>
           </div>
-        </div>
-      );
+        );
+      } else {
+        requests.push(
+          <div className='d-flex justify-content-between align-items-center my-2' key={value.id_punto}>
+            <p className='m-0 text-justify'>{value.nombre + ' ' + value.apellido}: {value.asunto}</p>
+            <div className='d-flex justify-content-between align-items-center'>
+              <i className="fas fa-edit fa-lg ml-4 my-icon" onClick={(e) => this.makeEditable(e, value.id_punto)}></i>
+              <i className="far fa-check-circle fa-lg mx-2 my-icon" onClick={(e) => this.acceptDiscussion(e, value.id_punto)}></i>
+            </div>
+          </div>
+        );
+      }
     }
     return requests;
   }
@@ -94,15 +135,16 @@ export default class SolicitudAgenda extends Component {
     });
     return (this.state.redirect ? <Redirect to='/' /> :
       <>
-        <button type="button" className="btn btn-outline-primary py-0 solicitud-button" data-toggle="modal" data-target="#solicitudes">
-          Ver solicitudes
+        <button type="button" className="my-button" data-toggle="modal" data-target="#solicitudes">
+          <i className="fas fa-tasks fa-lg my-icon"></i>
         </button>
         <div className="modal fade" id="solicitudes" role="dialog">
           <div className="modal-dialog modal-dialog-centered" role="document">
             <div className="modal-content modal-border">
               <div className="modal-body">
-                <h3 className="modal-title text-center mb-4">Solicitudes de Agenda</h3>
-                {this.state.solicitudes.length === 0 && <p className='my-muted'>No hay solicitudes de agenda para este consejo.</p>}
+                <i className="fas fa-times fa-lg m-2 ubicar-salida my-icon" data-dismiss="modal"></i>
+                <h4 className="modal-title text-center mb-4">Solicitudes de Agenda</h4>
+                {this.state.solicitudes.size === 0 && <p className='my-muted'>No hay solicitudes de agenda para este consejo.</p>}
                 {this.getRequests()}
                 <div className='d-flex justify-content-center'>
                   <button type="button" className="btn btn-outline-primary my-size mt-4" data-dismiss="modal">Listo</button>

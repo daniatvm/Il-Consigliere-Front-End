@@ -20,7 +20,6 @@ export default class Convocar extends Component {
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.button = React.createRef();
   }
 
   componentDidMount() {
@@ -188,6 +187,7 @@ export default class Convocar extends Component {
           <div className="col-md-6 m-auto">
             <div className="card border-primary mb-3">
               <div className="card-body">
+                <Link to='/gConsejos'><i className="fas fa-times fa-lg m-2 ubicar-salida" style={{ color: 'navy' }}></i></Link>
                 <h4 className="card-title text-center mb-4">Administrar participantes</h4>
                 <form onSubmit={this.handleSubmit}>
                   <div className='form-group convocado-div'>

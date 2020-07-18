@@ -11,9 +11,7 @@ export default class InvitarUsuario extends Component {
     super(props);
     this.state = {
       correo: '',
-      permisos: [],
-      gestionarUsuarios: false,
-      gestionarConsejos: false,
+      permisos: new Map(),
       id_tipo_convocado: 1,
       tipos_convocado: [],
       redirect: false
@@ -21,6 +19,7 @@ export default class InvitarUsuario extends Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleOptionChange = this.handleOptionChange.bind(this);
+    this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
     this.button = React.createRef();
   }
 
@@ -31,8 +30,14 @@ export default class InvitarUsuario extends Component {
           axios.get('/permiso')
             .then(res => {
               if (res.data.success) {
+                let permisos = new Map();
+                for (let i = 0; i < res.data.roles.length; i++) {
+                  let permiso = res.data.roles[i];
+                  permiso.seleccionado = false;
+                  permisos.set(permiso.id_permiso, permiso);
+                }
                 this.setState({
-                  permisos: res.data.roles
+                  permisos: permisos
                 });
               }
             })
@@ -58,10 +63,18 @@ export default class InvitarUsuario extends Component {
 
   handleInputChange(e) {
     const name = e.target.name;
-    const value = ((name === 'gestionarUsuarios') || (name === 'gestionarConsejos')) ? e.target.checked : e.target.value;
+    const value = e.target.value;
     this.setState({
       [name]: value
     });
+  }
+
+  handleCheckboxChange(e) {
+    const name = parseInt(e.target.name);
+    const value = e.target.checked;
+    let permiso = this.state.permisos.get(name);
+    permiso.seleccionado = value;
+    this.setState(prevState => ({ permisos: prevState.permisos.set(name, permiso) }));
   }
 
   handleOptionChange(e) {
@@ -77,19 +90,17 @@ export default class InvitarUsuario extends Component {
     auth.verifyToken()
       .then(value => {
         if (value) {
+          const permisos = [];
+          for (let value of this.state.permisos.values()) {
+            if (value.seleccionado) {
+              permisos.push(value.id_permiso);
+            }
+          }
           const info = {
             correo: this.state.correo,
-            id_tipo_convocado: this.state.id_tipo_convocado
+            id_tipo_convocado: this.state.id_tipo_convocado,
+            permisos: permisos
           };
-          if (this.state.gestionarConsejos && this.state.gestionarUsuarios) {
-            info.permisos = [1, 2];
-          } else if (this.state.gestionarConsejos) {
-            info.permisos = [2];
-          } else if (this.state.gestionarUsuarios) {
-            info.permisos = [1]
-          } else {
-            info.permisos = []
-          }
           axios.post('/usuario/enviar_link/', info)
             .then(resp => {
               if (resp.data.success) {
@@ -97,15 +108,17 @@ export default class InvitarUsuario extends Component {
               } else {
                 myAlert("Oh no!", "Error interno del servidor.", "error");
               }
+              for (let value of this.state.permisos.values()) {
+                value.seleccionado = false;
+                this.setState(prevState => ({ permisos: prevState.permisos.set(value.id_permiso, value) }));
+              }
+              this.setState({
+                correo: '',
+                id_tipo_convocado: 1,
+              });
               $('#invitar').modal('hide');
               this.button.current.removeAttribute('disabled', 'disabled');
               this.button.current.style.cursor = 'default';
-              this.setState({
-                correo: '',
-                gestionarUsuarios: false,
-                gestionarConsejos: false,
-                id_tipo_convocado: 1,
-              })
             })
             .catch((err) => console.log(err));
         } else {
@@ -120,16 +133,14 @@ export default class InvitarUsuario extends Component {
 
   getPermisos() {
     const checks = [];
-    for (let i = 0; i < this.state.permisos.length; i++) {
-      let name = this.state.permisos[i].nombre;
-      let id = this.state.permisos[i].id_permiso;
+    for (let value of this.state.permisos.values()) {
       checks.push(
-        <div className="custom-control custom-checkbox" key={i}>
+        <div className="custom-control custom-checkbox" key={value.id_permiso}>
           <input type="checkbox" className="custom-control-input"
-            id={name} checked={id === 1 ? this.state.gestionarUsuarios : this.state.gestionarConsejos}
-            onChange={this.handleInputChange} name={name} />
-          <label className="custom-control-label" htmlFor={name}>
-            {id === 1 ? 'Gestionar Usuarios' : 'Gestionar Consejos'}
+            id={value.nombre} checked={value.seleccionado}
+            onChange={this.handleCheckboxChange} name={value.id_permiso} />
+          <label className="custom-control-label" htmlFor={value.nombre}>
+            {value.nombre}
           </label>
         </div>
       );
@@ -162,10 +173,11 @@ export default class InvitarUsuario extends Component {
           <div className="modal-dialog modal-dialog-centered" role="document">
             <div className="modal-content modal-border">
               <div className="modal-body">
-                <h3 className="modal-title text-center mb-4">Invitación</h3>
+                <i className="fas fa-times fa-lg m-2 ubicar-salida my-icon" data-dismiss="modal"></i>
+                <h4 className="modal-title text-center mb-4">Invitación</h4>
                 <form onSubmit={this.handleSubmit}>
                   <div className="form-group">
-                    <input type="email" id='modal-input' required maxLength="50" name="correo"
+                    <input type="email" id='modal-input' required maxLength="200" name="correo"
                       placeholder="Correo electrónico" autoComplete="off" className="form-control"
                       onChange={this.handleInputChange} value={this.state.correo} />
                   </div>

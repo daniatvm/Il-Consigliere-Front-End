@@ -150,17 +150,17 @@ export default class Registro extends Component {
                       autoFocus onChange={this.handleInputChange} value={this.state.cedula} />
                   </div>
                   <div className="form-group">
-                    <input type="text" required maxLength="20" name="nombre"
+                    <input type="text" required maxLength="50" name="nombre"
                       placeholder="Nombre" className="form-control"
                       onChange={this.handleInputChange} value={this.state.nombre} />
                   </div>
                   <div className="form-group">
-                    <input type="text" required maxLength="20" name="apellido"
+                    <input type="text" required maxLength="50" name="apellido"
                       placeholder="Apellido" className="form-control"
                       onChange={this.handleInputChange} value={this.state.apellido} />
                   </div>
                   <div className="form-group">
-                    <input type="email" required maxLength="20" name="correo"
+                    <input type="email" required maxLength="200" name="correo"
                       placeholder="Correo electrónico" className="form-control"
                       onChange={this.handleInputChange} value={this.state.correo} />
                     <p className='my-muted'>*Escribe el correo al que desea recibir la información de los consejos.</p>
@@ -174,7 +174,7 @@ export default class Registro extends Component {
                     <input type="password" required minLength="4" maxLength="20" name="confirmacion"
                       placeholder="Confirme contraseña" className="form-control"
                       onChange={this.handleInputChange} value={this.state.confirmacion} />
-                    <p className='my-muted'>*La contraseña debe tener un largo mínimo de 4 caracteres.</p>
+                    <p className='my-muted'>*La contraseña debe tener un largo mínimo de 4 caracteres y tiene un máximo de 20 caracteres.</p>
                   </div>
                   <div className="form-group">
                     <button type="submit" className="btn btn-outline-primary btn-block mt-4">Registrarme</button>

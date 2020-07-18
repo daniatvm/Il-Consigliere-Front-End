@@ -45,7 +45,7 @@ export default class Navegacion extends Component {
 
   render() {
     return (
-      <nav className="navbar navbar-expand-lg navbar-light mb-4 p-0">
+      <nav className="navbar navbar-expand-lg navbar-light mb-4 p-0 navcolor sticky-top">
         <div className="container p-0">
           <Link className="navbar-brand" to={this.state.autenticado ? '/consejos' : '/'}><img className='logo' src={navBrand} alt="logo del TEC" /></Link>
           <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">

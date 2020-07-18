@@ -34,7 +34,7 @@ export default class Cuenta extends Component {
               </div>
             </div>
           </div>
-          <div className="col-md-7 mx-auto">
+          <div className="col-md-7 h-auto">
             <AdministrarCorreo />
           </div>
         </div>

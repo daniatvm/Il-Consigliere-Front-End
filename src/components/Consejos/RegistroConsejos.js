@@ -173,6 +173,7 @@ export default class RegistroConsejos extends Component {
           <div className="col-md-10 m-auto">
             <div className="card border-primary consejo-card">
               <div className="card-body">
+                <Link to='/gConsejos'><i className="fas fa-times fa-lg m-2 ubicar-salida" style={{ color: 'navy' }}></i></Link>
                 <h3 className="card-title text-center mb-4">Nuevo Consejo</h3>
                 <form onSubmit={this.handleSubmit}>
                   <div className='todo-registro'>
@@ -208,8 +209,8 @@ export default class RegistroConsejos extends Component {
                     </p>
                       <div className="form-group">
                         <div className='d-flex align-items-center'>
-                          <textarea placeholder='Punto de agenda (opcional)' maxLength="800" name='punto' className="form-control mr-2" onChange={this.handleInputChange} value={this.state.punto} />
-                          <i className="fas fa-plus-square my-icon fa-lg" onClick={(e) => this.addDiscussion(e)} />
+                          <textarea placeholder='Punto de agenda (opcional)' name='punto' className="form-control mr-2" onChange={this.handleInputChange} value={this.state.punto} />
+                          <button className="my-button" type="button" onClick={this.addDiscussion}><i className="fas fa-plus-square my-icon fa-lg" /></button>
                         </div>
                         <div className='punto-nuevo mt-2'>
                           {this.getDiscussions()}
@@ -221,9 +222,6 @@ export default class RegistroConsejos extends Component {
                     <button type="submit" className="btn btn-outline-primary mt-4 editar-button">Crear Consejo</button>
                     <Link className="btn btn-outline-secondary mt-4 editar-button" to='/gConsejos'>Cancelar</Link>
                   </div>
-                  {/* <div className="form-group d-flex justify-content-center">
-                    <button type="submit" className="btn btn-outline-primary mt-4 consejo-button">Crear Consejo</button>
-                  </div> */}
                 </form>
               </div>
             </div>

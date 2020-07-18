@@ -14,5 +14,3 @@ export const requestDay = () => {
   const due = parseInt(dd) + 3;
   return yyyy + '-' + mm + '-' + due.toString();
 }
-
-console.log(requestDay());

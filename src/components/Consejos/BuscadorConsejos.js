@@ -76,19 +76,21 @@ export default class BuscadorConsejos extends Component {
   render() {
     return (this.state.redirect ? <Redirect to='/' /> : this.state.encontrado ? <Redirect to={this.state.ruta} /> :
       <>
-        <p>¿Buscás un consejo en específico?</p>
-        <form onSubmit={this.handleSubmit}>
-          <div className='d-flex align-items-center'>
-            <div className='form-group'>
-              <input type="text" required maxLength="10" name="consecutivo"
-                placeholder="Buscar por consecutivo" autoComplete="off" className="form-control"
-                onChange={this.handleInputChange} value={this.state.consecutivo} />
+        <div className='d-flex justify-content-around align-items-center'>
+          <p>¿Buscás un consejo en específico?</p>
+          <form onSubmit={this.handleSubmit}>
+            <div className='d-flex align-items-center'>
+              <div className='form-group'>
+                <input type="text" required maxLength="10" name="consecutivo"
+                  placeholder="Buscar por consecutivo" autoComplete="off" className="form-control"
+                  onChange={this.handleInputChange} value={this.state.consecutivo} />
+              </div>
+              <div className='form-group'>
+                <button className="my-button" type="submit"><i className="fas fa-search my-icon fa-lg ml-2" /></button>
+              </div>
             </div>
-            <div className='form-group'>
-              <button className="my-button" type="submit"><i className="fas fa-search my-icon fa-lg ml-2" /></button>
-            </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </>
     );
   }

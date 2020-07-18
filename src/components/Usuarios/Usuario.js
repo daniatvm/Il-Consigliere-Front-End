@@ -15,13 +15,10 @@ export default class Usuario extends Component {
       cedula: this.props.match.params.cedula,
       nombre: '',
       apellido: '',
-      permisosUsuario: [],
-      permisosSistema: [],
+      permisos: new Map(),
       id_tipo_convocado: 0,
       tipos_convocado: [],
       correos: [],
-      gestionarUsuarios: false,
-      gestionarConsejos: false,
       encontrado: true,
       redirect: false
     }
@@ -52,45 +49,42 @@ export default class Usuario extends Component {
                           correos: emails.data.emails
                         });
                       }
-                      axios.get(`/usuario/permisos/${this.state.cedula}`)
-                        .then(roles => {
-                          if (roles.data.success) {
+                    })
+                    .catch((err) => console.log(err));
+                  axios.get('/tipo_convocado')
+                    .then(res => {
+                      if (res.data.success) {
+                        this.setState({
+                          tipos_convocado: res.data.attendantTypes
+                        });
+                      }
+                    })
+                    .catch((err) => console.log(err));
+                  axios.get('/permiso')
+                    .then(res => {
+                      if (res.data.success) {
+                        const permisos = new Map();
+                        let permiso = {};
+                        for (let i = 0; i < res.data.roles.length; i++) {
+                          permiso = res.data.roles[i];
+                          permiso.seleccionado = false;
+                          permisos.set(permiso.id_permiso, permiso);
+                        }
+                        axios.get(`/usuario/permisos/${this.state.cedula}`)
+                          .then(roles => {
+                            if (roles.data.success) {
+                              for (let i = 0; i < roles.data.roles.length; i++) {
+                                permiso = permisos.get(roles.data.roles[i].id_permiso);
+                                permiso.seleccionado = true;
+                                permisos.set(permiso.id_permiso, permiso);
+                              }
+                            }
                             this.setState({
-                              permisosUsuario: roles.data.roles
+                              permisos: permisos
                             });
-                          }
-                          for (let i = 0; i < this.state.permisosUsuario.length; i++) {
-                            if (this.state.permisosUsuario[i].id_permiso === 1) {
-                              this.setState({
-                                gestionarUsuarios: true
-                              });
-                            }
-                            if (this.state.permisosUsuario[i].id_permiso === 2) {
-                              this.setState({
-                                gestionarConsejos: true
-                              });
-                            }
-                          }
-                          axios.get('/permiso')
-                            .then(roles => {
-                              if (roles.data.success) {
-                                this.setState({
-                                  permisosSistema: roles.data.roles
-                                });
-                              }
-                            })
-                            .catch((err) => console.log(err));
-                          axios.get('/tipo_convocado')
-                            .then(res => {
-                              if (res.data.success) {
-                                this.setState({
-                                  tipos_convocado: res.data.attendantTypes
-                                });
-                              }
-                            })
-                            .catch((err) => console.log(err));
-                        })
-                        .catch((err) => console.log(err));
+                          })
+                          .catch((err) => console.log(err));
+                      }
                     })
                     .catch((err) => console.log(err));
                 } else {
@@ -118,11 +112,11 @@ export default class Usuario extends Component {
   }
 
   handleInputChange(e) {
+    const name = parseInt(e.target.name);
     const value = e.target.checked;
-    const name = e.target.name;
-    this.setState({
-      [name]: value
-    });
+    let permiso = this.state.permisos.get(name);
+    permiso.seleccionado = value;
+    this.setState(prevState => ({ permisos: prevState.permisos.set(name, permiso) }));
   }
 
   handleOptionChange(e) {
@@ -135,19 +129,15 @@ export default class Usuario extends Component {
     e.preventDefault();
     try {
       await axios.delete(`/usuario_permiso/${this.state.cedula}`);
-      if (this.state.gestionarUsuarios) {
-        const usuarioPermiso = {
-          id_permiso: 1,
-          cedula: this.state.cedula
-        };
-        await axios.post('/usuario_permiso', usuarioPermiso);
-      }
-      if (this.state.gestionarConsejos) {
-        const usuarioPermiso = {
-          id_permiso: 2,
-          cedula: this.state.cedula
-        };
-        await axios.post('/usuario_permiso', usuarioPermiso);
+      let info = {}
+      for (let value of this.state.permisos.values()) {
+        if (value.seleccionado) {
+          info = {
+            id_permiso: value.id_permiso,
+            cedula: this.state.cedula
+          }
+          await axios.post('/usuario_permiso', info);
+        }
       }
       await axios.put(`/usuario/convocado/${this.state.cedula}`, { id_tipo_convocado: this.state.id_tipo_convocado });
     } catch (err) {
@@ -166,16 +156,14 @@ export default class Usuario extends Component {
 
   checks() {
     const checks = [];
-    for (let i = 0; i < this.state.permisosSistema.length; i++) {
-      let name = this.state.permisosSistema[i].nombre;
-      let id = this.state.permisosSistema[i].id_permiso;
+    for (let value of this.state.permisos.values()) {
       checks.push(
-        <div className="custom-control custom-checkbox" key={i}>
+        <div className="custom-control custom-checkbox" key={value.id_permiso}>
           <input type="checkbox" className="custom-control-input"
-            id={name} checked={id === 1 ? this.state.gestionarUsuarios : this.state.gestionarConsejos}
-            onChange={this.handleInputChange} name={name} />
-          <label className="custom-control-label" htmlFor={name}>
-            {id === 1 ? 'Gestionar Usuarios' : 'Gestionar Consejos'}
+            id={value.nombre} checked={value.seleccionado}
+            onChange={this.handleInputChange} name={value.id_permiso} />
+          <label className="custom-control-label" htmlFor={value.nombre}>
+            {value.nombre}
           </label>
         </div>
       );
