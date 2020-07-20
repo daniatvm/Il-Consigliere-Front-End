@@ -86,7 +86,7 @@ export default class BuscadorConsejos extends Component {
                   onChange={this.handleInputChange} value={this.state.consecutivo} />
               </div>
               <div className='form-group'>
-                <button className="my-button" type="submit"><i className="fas fa-search my-icon fa-lg ml-2" /></button>
+                <button className="fas fa-search my-icon fa-lg ml-2 my-button" type="submit" />
               </div>
             </div>
           </form>

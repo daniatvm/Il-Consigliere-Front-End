@@ -140,7 +140,7 @@ export default class RegistroConsejos extends Component {
       formatoPuntos.push(
         <div className='d-flex justify-content-between align-items-center my-2' key={i}>
           <p className='m-0 text-justify'>{(i + 1) + '. ' + puntos[i]}</p>
-          <i className="fas fa-trash-alt my-icon fa-lg mx-1" onClick={(e) => this.deleteDiscussion(e, i)} />
+          <button className="fas fa-trash-alt my-icon fa-lg mx-1 my-button" type="button" onClick={(e) => this.deleteDiscussion(e, i)} />
         </div>
       );
     }
@@ -210,7 +210,7 @@ export default class RegistroConsejos extends Component {
                       <div className="form-group">
                         <div className='d-flex align-items-center'>
                           <textarea placeholder='Punto de agenda (opcional)' name='punto' className="form-control mr-2" onChange={this.handleInputChange} value={this.state.punto} />
-                          <button className="my-button" type="button" onClick={this.addDiscussion}><i className="fas fa-plus-square my-icon fa-lg" /></button>
+                          <button className="fas fa-plus-square my-icon fa-lg my-button" type="button" onClick={this.addDiscussion} />
                         </div>
                         <div className='punto-nuevo mt-2'>
                           {this.getDiscussions()}

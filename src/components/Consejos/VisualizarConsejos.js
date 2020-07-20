@@ -98,32 +98,25 @@ export default class VisualizarConsejos extends Component {
   councilList() {
     const councils = [];
     for (let i = 0; i < this.state.consejos.length; i++) {
-      let consecutivo = this.state.consejos[i].consecutivo;
-      let institucion = this.state.consejos[i].institucion;
-      let escuela = this.state.consejos[i].escuela;
-      let consejo = this.state.consejos[i].nombre_consejo;
-      let lugar = this.state.consejos[i].lugar;
-      let fecha = this.state.consejos[i].fecha;
-      let hora = this.state.consejos[i].hora;
-      let id_tipo_sesion = this.state.consejos[i].id_tipo_sesion;
+      let consejo = this.state.consejos[i];
       councils.push(
         <div className="col-md-4" key={i}>
           <div className="card border-primary mb-3">
             <div className="card-body p-2">
               <div className='d-flex justify-content-between align-items-center'>
-                <p className="card-title m-0">{institucion}</p>
+                <p className="card-title m-0">{consejo.institucion}</p>
                 <div className='d-flex justify-content-between align-items-center'>
-                  <Link to={`/gConsejos/participantes/${consecutivo}`}><i className="fas fa-user-cog fa-lg ml-2" style={{ color: "navy" }}></i></Link>
-                  <Link to={`/gConsejos/editar/${consecutivo}`}><i className="fas fa-edit fa-lg ml-2" style={{ color: "navy" }}></i></Link>
-                  <i className="fas fa-trash-alt my-icon fa-lg ml-2" onClick={(e) => this.deleteCouncil(e, consecutivo)} />
+                  <Link to={`/gConsejos/participantes/${consejo.consecutivo}`}><i className="fas fa-user-cog fa-lg ml-2" style={{ color: "navy" }}></i></Link>
+                  <Link to={`/gConsejos/editar/${consejo.consecutivo}`}><i className="fas fa-edit fa-lg ml-2" style={{ color: "navy" }}></i></Link>
+                  <i className="fas fa-trash-alt my-icon fa-lg ml-2" onClick={(e) => this.deleteCouncil(e, consejo.consecutivo)} />
                 </div>
               </div>
-              <p className='m-0'>{escuela}</p>
-              <p className='m-0'>{consejo}</p>
-              <p className='m-0'>Sesión {id_tipo_sesion === 1 ? 'Ordinaria' : 'Extraordinaria'} {consecutivo}</p>
-              <p className='m-0'>Lugar: {lugar}</p>
-              <p className='m-0'>Fecha: {fecha}</p>
-              <p className='m-0'>Hora: {hora}</p>
+              <p className='m-0'>{consejo.escuela}</p>
+              <p className='m-0'>{consejo.nombre_consejo}</p>
+              <p className='m-0'>Sesión {consejo.id_tipo_sesion === 1 ? 'Ordinaria' : consejo.id_tipo_sesion === 2 ? 'Extraordinaria' : 'Consulta Formal'} {consejo.consecutivo}</p>
+              <p className='m-0'>Lugar: {consejo.lugar}</p>
+              <p className='m-0'>Fecha: {consejo.fecha}</p>
+              <p className='m-0'>Hora: {consejo.hora}</p>
             </div>
           </div>
         </div>
@@ -135,30 +128,23 @@ export default class VisualizarConsejos extends Component {
   previousCouncilList() {
     const councils = [];
     for (let i = 0; i < this.state.anteriores.length; i++) {
-      let consecutivo = this.state.anteriores[i].consecutivo;
-      let institucion = this.state.anteriores[i].institucion;
-      let escuela = this.state.anteriores[i].escuela;
-      let consejo = this.state.anteriores[i].nombre_consejo;
-      let lugar = this.state.anteriores[i].lugar;
-      let fecha = this.state.anteriores[i].fecha;
-      let hora = this.state.anteriores[i].hora;
-      let id_tipo_sesion = this.state.anteriores[i].id_tipo_sesion;
+      let consejo = this.state.anteriores[i];
       councils.push(
         <div className="col-md-4" key={i}>
           <div className="card border-primary mb-3">
             <div className="card-body p-2">
               <div className='d-flex justify-content-between align-items-center'>
-                <p className="card-title m-0">{institucion}</p>
+                <p className="card-title m-0">{consejo.institucion}</p>
                 <div className='d-flex justify-content-between align-items-center'>
-                  <Link to={`/gConsejos/${consecutivo}`}><i className="far fa-eye fa-lg ml-2" style={{ color: "navy" }}></i></Link>
+                  <Link to={`/gConsejos/${consejo.consecutivo}`}><i className="far fa-eye fa-lg ml-2" style={{ color: "navy" }}></i></Link>
                 </div>
               </div>
-              <p className='m-0'>{escuela}</p>
-              <p className='m-0'>{consejo}</p>
-              <p className='m-0'>Sesión {id_tipo_sesion === 1 ? 'Ordinaria' : 'Extraordinaria'} {consecutivo}</p>
-              <p className='m-0'>Lugar: {lugar}</p>
-              <p className='m-0'>Fecha: {fecha}</p>
-              <p className='m-0'>Hora: {hora}</p>
+              <p className='m-0'>{consejo.escuela}</p>
+              <p className='m-0'>{consejo.nombre_consejo}</p>
+              <p className='m-0'>Sesión {consejo.id_tipo_sesion === 1 ? 'Ordinaria' : consejo.id_tipo_sesion === 2 ? 'Extraordinaria' : 'Consulta Formal'} {consejo.consecutivo}</p>
+              <p className='m-0'>Lugar: {consejo.lugar}</p>
+              <p className='m-0'>Fecha: {consejo.fecha}</p>
+              <p className='m-0'>Hora: {consejo.hora}</p>
             </div>
           </div>
         </div>

@@ -130,7 +130,7 @@ export default class AdministrarCorreo extends Component {
       emails.push(
         <div className="d-flex my-div mx-auto" key={i}>
           <div className="my-email2 mx-auto special-border">{correo}</div>
-          <i className="fas fa-trash-alt my-icon fa-lg my-auto" onClick={(e) => this.deleteEmail(e, correo)} />
+          <button className="fas fa-trash-alt my-icon fa-lg my-auto my-button" type="button" onClick={(e) => this.deleteEmail(e, correo)} />
         </div>
       );
     }
@@ -149,7 +149,7 @@ export default class AdministrarCorreo extends Component {
                 onChange={this.handleInputChange} value={this.state.correo} />
             </div>
             <div className="form-group my-auto d-block">
-              <button className="my-button" type="submit"><i className="fas fa-save my-icon fa-lg" /></button>
+              <button className="fas fa-save my-icon fa-lg my-button" type="submit" />
             </div>
           </div>
         </form>

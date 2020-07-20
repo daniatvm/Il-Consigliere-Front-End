@@ -65,13 +65,9 @@ export default class SolicitudAgenda extends Component {
 
   makeEditable(e, id_punto) {
     e.preventDefault();
-    let solicitudes = this.state.solicitudes;
-    let solicitud = solicitudes.get(id_punto);
+    let solicitud = this.state.solicitudes.get(id_punto);
     solicitud.editable = true;
-    solicitudes.set(id_punto, solicitud);
-    this.setState({
-      solicitudes: solicitudes
-    });
+    this.setState(prevState => ({ solicitudes: prevState.solicitudes.set(id_punto, solicitud) }));
   }
 
   acceptDiscussion(e, id_punto) {
@@ -111,7 +107,7 @@ export default class SolicitudAgenda extends Component {
               <p className='m-0 text-justify'>{value.nombre + ' ' + value.apellido}:</p>
               <textarea name={value.id_punto} className="form-control" onChange={this.handleInputChange} value={value.asunto} style={{ width: 'inherited' }} />
             </div>
-            <i className="far fa-check-circle fa-lg mx-2 my-icon" onClick={(e) => this.acceptDiscussion(e, value.id_punto)}></i>
+            <button className="far fa-check-circle my-icon fa-lg mx-2 my-button" type="button" onClick={(e) => this.acceptDiscussion(e, value.id_punto)} />
           </div>
         );
       } else {
@@ -119,8 +115,8 @@ export default class SolicitudAgenda extends Component {
           <div className='d-flex justify-content-between align-items-center my-2' key={value.id_punto}>
             <p className='m-0 text-justify'>{value.nombre + ' ' + value.apellido}: {value.asunto}</p>
             <div className='d-flex justify-content-between align-items-center'>
-              <i className="fas fa-edit fa-lg ml-4 my-icon" onClick={(e) => this.makeEditable(e, value.id_punto)}></i>
-              <i className="far fa-check-circle fa-lg mx-2 my-icon" onClick={(e) => this.acceptDiscussion(e, value.id_punto)}></i>
+              <button className="fas fa-edit my-icon fa-lg ml-4 my-button" type="button" onClick={(e) => this.makeEditable(e, value.id_punto)} />
+              <button className="far fa-check-circle my-icon fa-lg mx-2 my-button" type="button" onClick={(e) => this.acceptDiscussion(e, value.id_punto)} />
             </div>
           </div>
         );
@@ -135,9 +131,7 @@ export default class SolicitudAgenda extends Component {
     });
     return (this.state.redirect ? <Redirect to='/' /> :
       <>
-        <button type="button" className="my-button" data-toggle="modal" data-target="#solicitudes">
-          <i className="fas fa-tasks fa-lg my-icon"></i>
-        </button>
+        <button className="fas fa-tasks my-icon fa-lg my-button" type="button" data-toggle="modal" data-target="#solicitudes" />
         <div className="modal fade" id="solicitudes" role="dialog">
           <div className="modal-dialog modal-dialog-centered" role="document">
             <div className="modal-content modal-border">

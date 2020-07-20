@@ -78,7 +78,7 @@ export default class Consejos extends Component {
               </div>
               <p className='m-0'>{escuela}</p>
               <p className='m-0'>{nombre_consejo}</p>
-              <p className='m-0'>Sesión {id_tipo_sesion === 1 ? 'Ordinaria' : 'Extraordinaria'} {consecutivo}</p>
+              <p className='m-0'>Sesión {id_tipo_sesion === 1 ? 'Ordinaria' : id_tipo_sesion === 2 ? 'Extraordinaria' : 'Consulta Formal'} {consecutivo}</p>
               <p className='m-0'>Lugar: {lugar}</p>
               <p className='m-0'>Fecha: {fecha}</p>
               <p className='m-0'>Hora: {hora}</p>
@@ -112,7 +112,7 @@ export default class Consejos extends Component {
               </div>
               <p className='m-0'>{escuela}</p>
               <p className='m-0'>{nombre_consejo}</p>
-              <p className='m-0'>Sesión {id_tipo_sesion === 1 ? 'Ordinaria' : 'Extraordinaria'} {consecutivo}</p>
+              <p className='m-0'>Sesión {id_tipo_sesion === 1 ? 'Ordinaria' : id_tipo_sesion === 2 ? 'Extraordinaria' : 'Consulta Formal'} {consecutivo}</p>
               <p className='m-0'>Lugar: {lugar}</p>
               <p className='m-0'>Fecha: {fecha}</p>
               <p className='m-0'>Hora: {hora}</p>

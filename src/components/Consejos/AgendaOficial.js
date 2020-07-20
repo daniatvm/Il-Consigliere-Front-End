@@ -108,7 +108,7 @@ export default class AgendaOficial extends Component {
       discussions.push(
         <div className='d-flex justify-content-between align-items-center my-2' key={i}>
           <li className='text-justify'>{punto.asunto}</li>
-          <i className="fas fa-trash-alt my-icon fa-lg mx-1" onClick={(e) => this.deleteDiscussion(e, punto.id_punto)} />
+          <button className="fas fa-trash-alt my-icon fa-lg my-button mx-1" type="button" onClick={(e) => this.deleteDiscussion(e, punto.id_punto)} />
         </div>
       );
     }
@@ -125,8 +125,9 @@ export default class AgendaOficial extends Component {
         <div className="form-group">
           <div className='d-flex align-items-center'>
             <textarea placeholder='Punto de agenda (opcional)' name='punto' className="form-control mr-2" onChange={this.handleInputChange} value={this.state.punto} />
-            <button className="my-button" type="button" onClick={this.addDiscussion}><i className="fas fa-plus-square my-icon fa-lg" /></button>
+            <button className="fas fa-plus-square my-icon fa-lg my-button" type="button" onClick={this.addDiscussion} />
           </div>
+          {this.state.puntos.length === 0 && <p className='my-muted'>No se han agregado puntos de agenda.</p>}
           <div className='punto-editable mt-2'>
             <ol className='pl-4 m-0'>
               {this.getDiscussions()}

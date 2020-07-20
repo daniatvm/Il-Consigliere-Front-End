@@ -96,7 +96,7 @@ export default class SolicitudAgendaConvocado extends Component {
       requests.push(
         <div className='d-flex justify-content-between align-items-center my-2' key={i}>
           <li className='text-justify'>{solicitud.asunto}</li>
-          <i className="fas fa-trash-alt my-icon fa-lg mx-1" onClick={(e) => this.deleteRequest(e, solicitud.id_punto)} />
+          <button className="fas fa-trash-alt my-icon fa-lg mx-1 my-button" type="button" onClick={(e) => this.deleteRequest(e, solicitud.id_punto)} />
         </div>
       );
     }
@@ -133,7 +133,7 @@ export default class SolicitudAgendaConvocado extends Component {
           <div className="form-group">
             <div className='d-flex align-items-center'>
               <textarea placeholder='Punto de agenda (opcional)' name='punto' className="form-control mr-2" onChange={this.handleInputChange} value={this.state.punto} />
-              <button className="my-button" type="button" onClick={this.handleSubmit}><i className="fas fa-plus-square my-icon fa-lg" /></button>
+              <button className="fas fa-plus-square my-icon fa-lg my-button" type="submit" />
             </div>
           </div>
           <div className='solicitud-container'>
