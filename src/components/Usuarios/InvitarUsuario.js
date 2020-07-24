@@ -85,11 +85,11 @@ export default class InvitarUsuario extends Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    this.button.current.setAttribute('disabled', 'disabled');
-    this.button.current.style.cursor = 'progress';
     auth.verifyToken()
       .then(value => {
         if (value) {
+          this.button.current.setAttribute('disabled', 'disabled');
+          this.button.current.style.cursor = 'progress';
           const permisos = [];
           for (let value of this.state.permisos.values()) {
             if (value.seleccionado) {

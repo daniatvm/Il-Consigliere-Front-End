@@ -12,6 +12,7 @@ export default class Registro extends Component {
       cedula: '',
       nombre: '',
       apellido: '',
+      segundo_apellido: '',
       clave: '',
       confirmacion: '',
       correo: '',
@@ -68,6 +69,7 @@ export default class Registro extends Component {
         cedula: this.state.cedula,
         nombre: this.state.nombre,
         apellido: this.state.apellido,
+        segundo_apellido: this.state.segundo_apellido,
         clave: this.state.clave,
         id_tipo_convocado: this.state.permisos[0].id_tipo_convocado
       };
@@ -158,6 +160,11 @@ export default class Registro extends Component {
                     <input type="text" required maxLength="50" name="apellido"
                       placeholder="Apellido" className="form-control"
                       onChange={this.handleInputChange} value={this.state.apellido} />
+                  </div>
+                  <div className="form-group">
+                    <input type="text" required maxLength="50" name="segundo_apellido"
+                      placeholder="Segundo Apellido" className="form-control"
+                      onChange={this.handleInputChange} value={this.state.segundo_apellido} />
                   </div>
                   <div className="form-group">
                     <input type="email" required maxLength="200" name="correo"

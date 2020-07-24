@@ -86,7 +86,8 @@ export default class Consejos extends Component {
                 <div className='todo-registro'>
                   <div className='registro-container izq'>
                     <p className="card-title text-center text-uppercase m-0">{this.state.consejo.institucion}</p>
-                    <p className='text-uppercase text-center m-0'>{this.state.consejo.escuela}</p>
+                    <p className='text-uppercase text-center m-0'>{this.state.consejo.carrera}</p>
+                    <p className='text-uppercase text-center m-0'>{this.state.consejo.campus}</p>
                     <p className='text-uppercase text-center m-0'>Convocatoria</p>
                     <p className='text-uppercase text-center m-0'>Sesión {this.state.consejo.id_tipo_sesion === 1 ? 'Ordinaria' : 'Extraordinaria'} {this.state.consecutivo}</p>
                     <p className='text-uppercase text-center m-0'>{this.state.consejo.nombre_consejo}</p>

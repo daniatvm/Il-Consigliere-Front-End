@@ -14,6 +14,7 @@ export default class Consejos extends Component {
       cedula: info.cedula,
       nombre: info.nombre,
       apellido: info.apellido,
+      segundo_apellido: info.segundo_apellido,
       consejos: [],
       anteriores: [],
       redirect: false
@@ -37,7 +38,7 @@ export default class Consejos extends Component {
               }
             })
             .catch((err) => console.log(err));
-          axios.get(`/consejo/anteriores/convocado/${this.state.cedula}/${getTodaysDate()}`)
+          axios.get(`/consejo/anteriores/por_usuario/${this.state.cedula}/${getTodaysDate()}`)
             .then(res => {
               if (res.data.success) {
                 this.setState({
@@ -62,7 +63,8 @@ export default class Consejos extends Component {
       let consejo = this.state.consejos[i];
       let consecutivo = consejo.consecutivo;
       let institucion = consejo.institucion;
-      let escuela = consejo.escuela;
+      let carrera = consejo.carrera;
+      let campus = consejo.campus;
       let nombre_consejo = consejo.nombre_consejo;
       let lugar = consejo.lugar;
       let fecha = consejo.fecha;
@@ -76,7 +78,8 @@ export default class Consejos extends Component {
                 <p className="card-title m-0">{institucion}</p>
                 <Link to={`/consejos/${consecutivo}`}><i className="far fa-eye fa-lg ml-2" style={{ color: "navy" }}></i></Link>
               </div>
-              <p className='m-0'>{escuela}</p>
+              <p className='m-0'>{carrera}</p>
+              <p className='m-0'>{campus}</p>
               <p className='m-0'>{nombre_consejo}</p>
               <p className='m-0'>Sesión {id_tipo_sesion === 1 ? 'Ordinaria' : id_tipo_sesion === 2 ? 'Extraordinaria' : 'Consulta Formal'} {consecutivo}</p>
               <p className='m-0'>Lugar: {lugar}</p>
@@ -96,7 +99,8 @@ export default class Consejos extends Component {
       let consejo = this.state.anteriores[i];
       let consecutivo = consejo.consecutivo;
       let institucion = consejo.institucion;
-      let escuela = consejo.escuela;
+      let carrera = consejo.carrera;
+      let campus = consejo.campus;
       let nombre_consejo = consejo.nombre_consejo;
       let lugar = consejo.lugar;
       let fecha = consejo.fecha;
@@ -110,7 +114,8 @@ export default class Consejos extends Component {
                 <p className="card-title m-0">{institucion}</p>
                 <Link to={`/consejos/${consecutivo}`}><i className="far fa-eye fa-lg ml-2" style={{ color: "navy" }}></i></Link>
               </div>
-              <p className='m-0'>{escuela}</p>
+              <p className='m-0'>{carrera}</p>
+              <p className='m-0'>{campus}</p>
               <p className='m-0'>{nombre_consejo}</p>
               <p className='m-0'>Sesión {id_tipo_sesion === 1 ? 'Ordinaria' : id_tipo_sesion === 2 ? 'Extraordinaria' : 'Consulta Formal'} {consecutivo}</p>
               <p className='m-0'>Lugar: {lugar}</p>
@@ -129,7 +134,7 @@ export default class Consejos extends Component {
       <>
         <Navegacion />
         <div className='container'>
-          <p className='lead mt-2'>Te damos la bienvenida {this.state.nombre} {this.state.apellido}</p>
+          <p className='lead mt-2'>Te damos la bienvenida {this.state.nombre} {this.state.apellido} {this.state.segundo_apellido}</p>
           {this.state.consejos.length > 0 ? <p className='text-center lead'>Consejos a los que te han convocado:</p> : <p className='my-muted text-center'>No tienes consejos próximos a asistir.</p>}
         </div>
         <div className="row m-0 mt-4">

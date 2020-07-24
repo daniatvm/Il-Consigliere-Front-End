@@ -7,6 +7,7 @@ class Auth {
       cedula: '',
       nombre: '',
       apellido: '',
+      segundo_apellido: '',
       enSistema: false
     };
   }
@@ -16,6 +17,7 @@ class Auth {
       cedula: info.cedula,
       nombre: info.nombre,
       apellido: info.apellido,
+      segundo_apellido: info.segundo_apellido,
       enSistema: true
     };
   }
@@ -67,5 +69,4 @@ class Auth {
     }
   }
 }
-const auth = new Auth();
-export default auth;
+export default new Auth();

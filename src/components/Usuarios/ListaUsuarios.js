@@ -87,13 +87,14 @@ export default class ListaUsuarios extends Component {
     const tableRows = [];
     for (let i = 0; i < this.state.usuarios.length; i++) {
       let user = this.state.usuarios[i];
-      let { cedula, nombre, apellido } = user;
+      let { cedula, nombre, apellido, segundo_apellido } = user;
       if (cedula !== auth.getInfo().cedula) {
         tableRows.push(
           <tr key={i}>
             <td className='special-border align-middle'>{cedula}</td>
             <td className='special-border align-middle'>{nombre}</td>
             <td className='special-border align-middle'>{apellido}</td>
+            <td className='special-border align-middle'>{segundo_apellido}</td>
             <td className='special-border align-middle'>
               <Link to={`/gUsuarios/${cedula}`}><i className="far fa-eye fa-lg mr-4" style={{ color: "navy" }}></i></Link>
               <i className='fas fa-trash-alt my-icon fa-lg' onClick={(e) => this.deleteUser(e, cedula, nombre, apellido)} />

@@ -15,11 +15,13 @@ export default class Convocar extends Component {
       consecutivo: this.props.match.params.consecutivo,
       usuarios: [],
       convocados: new Map(),
+      convocadosAnteriormente: [],
       seleccionarTodos: false,
       redirect: false
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.button = React.createRef();
   }
 
   componentDidMount() {
@@ -45,6 +47,9 @@ export default class Convocar extends Component {
                 axios.get(`/convocado/por_consejo/${this.state.consecutivo}`)
                   .then(res => {
                     if (res.data.success) {
+                      this.setState({
+                        convocadosAnteriormente: res.data.convocados
+                      });
                       convAntCantidad = res.data.convocados.length;
                       convAnt = res.data.convocados;
                       if (convAntCantidad === usuariosCantidad) {
@@ -113,22 +118,36 @@ export default class Convocar extends Component {
     auth.verifyToken()
       .then(async value => {
         if (value) {
-          const convoque = [];
-          for (let [key, value] of this.state.convocados.entries()) {
-            if (value) {
-              convoque.push({
-                cedula: key
-              });
-            }
-          }
           try {
-            await axios.delete(`/convocado/por_consejo/${this.state.consecutivo}`);
-            const res = await axios.post('/convocado', { convocados: convoque, consecutivo: this.state.consecutivo, limite_solicitud: requestDay() });
-            if (res.data.success) {
+            const convocados = this.state.convocados;
+            const convoque = [];
+            for (let i = 0; i < this.state.convocadosAnteriormente.length; i++) {
+              if (convocados.get(this.state.convocadosAnteriormente[i].cedula)) {
+                convocados.delete(this.state.convocadosAnteriormente[i].cedula);
+              } else {
+                await axios.delete(`/convocado/por_usuario/${this.state.consecutivo}/${this.state.convocadosAnteriormente[i].cedula}`);
+              }
+            }
+            for (let [key, value] of convocados.entries()) {
+              if (value) {
+                convoque.push(key);
+              }
+            }
+            if (convoque.length > 0) {
+              this.button.current.setAttribute('disabled', 'disabled');
+              this.button.current.style.cursor = 'progress';
+              const res = await axios.post('/convocado', { convocados: convoque, consecutivo: this.state.consecutivo, limite_solicitud: requestDay() });
+              if (res.data.success) {
+                this.button.current.removeAttribute('disabled', 'disabled');
+                this.button.current.style.cursor = 'default';
+                myAlert('Éxito', 'Se han convocado todos los usuarios que se escogieron.', 'success');
+                this.props.history.push('/gConsejos');
+              } else {
+                myAlert('Oh no', 'Ha ocurrido un error en el sistema.', 'error');
+              }
+            } else {
               myAlert('Éxito', 'Se han convocado todos los usuarios que se escogieron.', 'success');
               this.props.history.push('/gConsejos');
-            } else {
-              myAlert('Oh no', 'Ha ocurrido un error en el sistema.', 'error');
             }
           } catch (error) {
             console.log(error);
@@ -165,14 +184,12 @@ export default class Convocar extends Component {
   getUsers() {
     const users = [];
     for (let i = 0; i < this.state.usuarios.length; i++) {
-      let cedula = this.state.usuarios[i].cedula;
-      let nombre = this.state.usuarios[i].nombre;
-      let apellido = this.state.usuarios[i].apellido;
+      let usuario = this.state.usuarios[i];
       users.push(
         <div className="custom-control custom-checkbox" key={i}>
-          <input type="checkbox" className="custom-control-input" id={cedula} name={cedula}
-            checked={!!this.state.convocados.get(cedula)} onChange={this.handleInputChange} />
-          <label className="custom-control-label" htmlFor={cedula}>{nombre} {apellido}</label>
+          <input type="checkbox" className="custom-control-input" id={usuario.cedula} name={usuario.cedula}
+            checked={!!this.state.convocados.get(usuario.cedula)} onChange={this.handleInputChange} />
+          <label className="custom-control-label" htmlFor={usuario.cedula}>{usuario.nombre} {usuario.apellido} {usuario.segundo_apellido}</label>
         </div>
       );
     }
@@ -200,7 +217,7 @@ export default class Convocar extends Component {
                     {this.getUsers()}
                   </div>
                   <div className="form-group d-flex justify-content-around">
-                    <button type="submit" className="btn btn-outline-primary mt-4 convocar-button">Aceptar</button>
+                    <button ref={this.button} type="submit" className="btn btn-outline-primary mt-4 convocar-button">Aceptar</button>
                     <Link className="btn btn-outline-secondary mt-4 convocar-button" to='/gConsejos'>Descartar</Link>
                   </div>
                 </form>

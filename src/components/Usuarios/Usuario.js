@@ -3,9 +3,9 @@ import { Redirect, Link } from 'react-router-dom';
 import axios from 'axios';
 import Navegacion from '../Navegacion/Navegacion';
 import auth from '../../helpers/auth';
-import './Usuario.css';
 import DefaultComponent from '../../helpers/DefaultComponent';
 import { Loading } from '../../helpers/Loading';
+import './Usuario.css';
 
 export default class Usuario extends Component {
   constructor(props) {
@@ -13,10 +13,8 @@ export default class Usuario extends Component {
     this.state = {
       isLoading: true,
       cedula: this.props.match.params.cedula,
-      nombre: '',
-      apellido: '',
+      usuario: {},
       permisos: new Map(),
-      id_tipo_convocado: 0,
       tipos_convocado: [],
       correos: [],
       encontrado: true,
@@ -35,12 +33,9 @@ export default class Usuario extends Component {
             axios.get(`/usuario/${this.state.cedula}`)
               .then(user => {
                 if (user.data.success) {
-                  const usuario = user.data.user;
                   this.setState({
                     isLoading: false,
-                    nombre: usuario.nombre,
-                    apellido: usuario.apellido,
-                    id_tipo_convocado: usuario.id_tipo_convocado
+                    usuario: user.data.user
                   });
                   axios.get(`/correo/${this.state.cedula}`)
                     .then(emails => {
@@ -120,8 +115,10 @@ export default class Usuario extends Component {
   }
 
   handleOptionChange(e) {
+    let usuario = this.state.usuario;
+    usuario.id_tipo_convocado = e.target.value;
     this.setState({
-      id_tipo_convocado: e.target.value
+      usuario: usuario
     });
   }
 
@@ -139,7 +136,7 @@ export default class Usuario extends Component {
           await axios.post('/usuario_permiso', info);
         }
       }
-      await axios.put(`/usuario/convocado/${this.state.cedula}`, { id_tipo_convocado: this.state.id_tipo_convocado });
+      await axios.put(`/usuario/convocado/${this.state.cedula}`, { id_tipo_convocado: this.state.usuario.id_tipo_convocado });
     } catch (err) {
       console.log(err);
     }
@@ -191,7 +188,7 @@ export default class Usuario extends Component {
           <div className="col-md-6 m-auto">
             <div className="card border-primary">
               <div className="card-body">
-                <h3 className="card-title text-center mb-4">Información de {this.state.nombre} {this.state.apellido}</h3>
+                <h4 className="card-title text-center mb-4">Información de {this.state.usuario.nombre} {this.state.usuario.apellido} {this.state.usuario.segundo_apellido}</h4>
                 <p>Cédula: {this.state.cedula}</p>
                 {this.state.correos.length === 0 ? <p>Este usuario no tiene correos registrados.</p> : <h5>Correos asociados:</h5>}
                 {this.getEmails()}
@@ -204,7 +201,7 @@ export default class Usuario extends Component {
                   <hr />
                   <div className="form-group">
                     <p className="lead">Se convoca como:</p>
-                    <select className="custom-select" value={this.state.id_tipo_convocado} onChange={this.handleOptionChange}>
+                    <select className="custom-select" value={this.state.usuario.id_tipo_convocado} onChange={this.handleOptionChange}>
                       {this.getAttendantType()}
                     </select>
                   </div>

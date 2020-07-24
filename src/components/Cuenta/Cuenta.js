@@ -13,7 +13,8 @@ export default class Cuenta extends Component {
     this.state = {
       cedula: info.cedula,
       nombre: info.nombre,
-      apellido: info.apellido
+      apellido: info.apellido,
+      segundo_apellido: info.segundo_apellido
     }
   }
 
@@ -22,19 +23,19 @@ export default class Cuenta extends Component {
       <>
         <Navegacion />
         <div className="row m-0 my-row">
-          <div className="col-md-5 m-auto">
+          <div className="col-md-5 mx-auto">
             <div className="card border-primary">
               <div className="card-body">
                 <h4 className="card-title text-center mb-4">Mi Información</h4>
                 <p>Cédula: {this.state.cedula}</p>
                 <p>Nombre: {this.state.nombre}</p>
-                <p>Apellido: {this.state.apellido}</p>
+                <p>Apellidos: {this.state.apellido} {this.state.segundo_apellido}</p>
                 <hr />
                 <CambioClave />
               </div>
             </div>
           </div>
-          <div className="col-md-7 h-auto">
+          <div className="col-md-7 h-auto especial">
             <AdministrarCorreo />
           </div>
         </div>

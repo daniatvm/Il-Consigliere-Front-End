@@ -56,7 +56,7 @@ export default class Convocados extends Component {
   getTeachers() {
     const attendants = [];
     for (let i = 0; i < this.state.docentes.length; i++) {
-      attendants.push(<li className='m-0' key={i}>{this.state.docentes[i].nombre} {this.state.docentes[i].apellido}</li>);
+      attendants.push(<li className='m-0' key={i}>{this.state.docentes[i].nombre} {this.state.docentes[i].apellido} {this.state.docentes[i].segundo_apellido}</li>);
     }
     return attendants;
   }
@@ -64,7 +64,7 @@ export default class Convocados extends Component {
   getAdmin() {
     const attendants = [];
     for (let i = 0; i < this.state.administrativo.length; i++) {
-      attendants.push(<li className='m-0' key={i}>{this.state.administrativo[i].nombre} {this.state.administrativo[i].apellido}</li>);
+      attendants.push(<li className='m-0' key={i}>{this.state.administrativo[i].nombre} {this.state.administrativo[i].apellido} {this.state.administrativo[i].segundo_apellido}</li>);
     }
     return attendants;
   }
@@ -72,7 +72,7 @@ export default class Convocados extends Component {
   getStudents() {
     const attendants = [];
     for (let i = 0; i < this.state.estudiantes.length; i++) {
-      attendants.push(<li className='m-0' key={i}>{this.state.estudiantes[i].nombre} {this.state.estudiantes[i].apellido}</li>);
+      attendants.push(<li className='m-0' key={i}>{this.state.estudiantes[i].nombre} {this.state.estudiantes[i].apellido} {this.state.estudiantes[i].segundo_apellido}</li>);
     }
     return attendants;
   }

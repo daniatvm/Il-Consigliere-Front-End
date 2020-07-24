@@ -3,17 +3,17 @@
 }
 
 .my-div {
-    width: 80%;
+    width: 95%;
     padding: 0.75rem;
     vertical-align: top;
 }
 
 .my-email {
-    width: 85%;
+    width: 90%;
 }
 
 .my-email2 {
-    width: 85%;
+    width: 90%;
     text-align: center;
 }
 
@@ -22,7 +22,7 @@
     overflow: auto;
 }
 
-@media only screen and (max-width: 760px) {
+@media only screen and (max-width: 768px) {
     .especial {
         margin-top: 40px;
     }

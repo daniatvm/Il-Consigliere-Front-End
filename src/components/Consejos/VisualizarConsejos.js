@@ -111,7 +111,8 @@ export default class VisualizarConsejos extends Component {
                   <i className="fas fa-trash-alt my-icon fa-lg ml-2" onClick={(e) => this.deleteCouncil(e, consejo.consecutivo)} />
                 </div>
               </div>
-              <p className='m-0'>{consejo.escuela}</p>
+              <p className='m-0'>{consejo.carrera}</p>
+              <p className='m-0'>{consejo.campus}</p>
               <p className='m-0'>{consejo.nombre_consejo}</p>
               <p className='m-0'>Sesión {consejo.id_tipo_sesion === 1 ? 'Ordinaria' : consejo.id_tipo_sesion === 2 ? 'Extraordinaria' : 'Consulta Formal'} {consejo.consecutivo}</p>
               <p className='m-0'>Lugar: {consejo.lugar}</p>
@@ -139,7 +140,8 @@ export default class VisualizarConsejos extends Component {
                   <Link to={`/gConsejos/${consejo.consecutivo}`}><i className="far fa-eye fa-lg ml-2" style={{ color: "navy" }}></i></Link>
                 </div>
               </div>
-              <p className='m-0'>{consejo.escuela}</p>
+              <p className='m-0'>{consejo.carrera}</p>
+              <p className='m-0'>{consejo.campus}</p>
               <p className='m-0'>{consejo.nombre_consejo}</p>
               <p className='m-0'>Sesión {consejo.id_tipo_sesion === 1 ? 'Ordinaria' : consejo.id_tipo_sesion === 2 ? 'Extraordinaria' : 'Consulta Formal'} {consejo.consecutivo}</p>
               <p className='m-0'>Lugar: {consejo.lugar}</p>
