@@ -85,12 +85,12 @@
 }
 
 .punto-editable {
-    height: 300px;
+    height: 250px;
     overflow: auto;
 }
 
 .punto-nuevo {
-    height: 250px;
+    height: 200px;
     overflow: auto;
 }
 

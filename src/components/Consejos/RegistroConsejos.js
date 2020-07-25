@@ -7,8 +7,6 @@ import { myAlert } from '../../helpers/alert';
 import { getTodaysDate } from '../../helpers/dates';
 import './Consejos.css';
 
-let puntos = [];
-
 export default class RegistroConsejos extends Component {
   constructor(props) {
     super(props);
@@ -19,17 +17,22 @@ export default class RegistroConsejos extends Component {
       hora: '',
       hoy: getTodaysDate(),
       tipoSesion: [],
+      tipoPunto: [],
       sesionSeleccionada: 1,
+      puntoSeleccionado: 1,
+      ordenar: false,
       punto: '',
       puntos: [],
       redirect: false
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleOptionChange = this.handleOptionChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.addDiscussion = this.addDiscussion.bind(this);
     this.deleteDiscussion = this.deleteDiscussion.bind(this);
+    this.sort = this.sort.bind(this);
+    this.up = this.up.bind(this);
+    this.down = this.down.bind(this);
   }
 
   componentDidMount() {
@@ -41,6 +44,15 @@ export default class RegistroConsejos extends Component {
               if (res.data.success) {
                 this.setState({
                   tipoSesion: res.data.councilTypes
+                });
+              }
+            })
+            .catch((err) => console.log(err));
+          axios.get('/tipo_punto')
+            .then(res => {
+              if (res.data.success) {
+                this.setState({
+                  tipoPunto: res.data.discussionTypes
                 });
               }
             })
@@ -63,21 +75,41 @@ export default class RegistroConsejos extends Component {
     });
   }
 
-  handleOptionChange(e) {
-    this.setState({
-      sesionSeleccionada: e.target.value
-    });
-  }
-
   addDiscussion(e) {
     e.preventDefault();
     if (this.state.punto !== '') {
+      let puntos = this.state.puntos;
       puntos.push(this.state.punto);
       this.setState({
         punto: '',
         puntos: puntos
       });
     }
+  }
+
+  sort(e) {
+    e.preventDefault();
+    this.setState({
+      ordenar: !this.state.ordenar
+    });
+  }
+
+  up(e, i) {
+    e.preventDefault();
+    let puntos = this.state.puntos;
+    [puntos[i - 1], puntos[i]] = [puntos[i], puntos[i - 1]];
+    this.setState({
+      puntos: puntos
+    });
+  }
+
+  down(e, i) {
+    e.preventDefault();
+    let puntos = this.state.puntos;
+    [puntos[i + 1], puntos[i]] = [puntos[i], puntos[i + 1]];
+    this.setState({
+      puntos: puntos
+    });
   }
 
   handleSubmit(e) {
@@ -96,14 +128,13 @@ export default class RegistroConsejos extends Component {
                   fecha: this.state.fecha,
                   hora: this.state.hora,
                   id_tipo_sesion: this.state.sesionSeleccionada,
-                  puntos: puntos,
+                  puntos: this.state.puntos,
                   cedula: auth.getInfo().cedula,
-                  id_tipo_punto: 1
+                  id_estado_punto: 1
                 };
                 axios.post('/consejo', consejo)
                   .then(res => {
                     if (res.data.success) {
-                      puntos = [];
                       this.props.history.push('/gConsejos');
                     } else {
                       myAlert('Oh no!', 'Error interno del servidor.', 'error');
@@ -125,6 +156,7 @@ export default class RegistroConsejos extends Component {
 
   deleteDiscussion(e, i) {
     e.preventDefault();
+    let puntos = this.state.puntos;
     puntos.splice(i, 1);
     this.setState({
       puntos: puntos
@@ -133,14 +165,21 @@ export default class RegistroConsejos extends Component {
 
   getDiscussions() {
     let formatoPuntos = [];
-    if (puntos.length === 0) {
+    if (this.state.puntos.length === 0) {
       return <p className='my-muted'>No se han agregado puntos de agenda</p>;
     }
-    for (let i = 0; i < puntos.length; i++) {
+    for (let i = 0; i < this.state.puntos.length; i++) {
       formatoPuntos.push(
         <div className='d-flex justify-content-between align-items-center my-2' key={i}>
-          <p className='m-0 text-justify'>{(i + 1) + '. ' + puntos[i]}</p>
-          <button className="fas fa-trash-alt my-icon fa-lg mx-1 my-button" type="button" onClick={(e) => this.deleteDiscussion(e, i)} />
+          <p className='m-0 text-justify'>{(i + 1) + '. ' + this.state.puntos[i]}</p>
+          {this.state.ordenar ?
+            <div className='d-flex'>
+              {i !== 0 && <button className="far fa-caret-square-up my-icon fa-lg mx-1 my-button" type="button" onClick={(e) => this.up(e, i)} />}
+              {i !== (this.state.puntos.length - 1) && <button className="far fa-caret-square-down my-icon fa-lg mx-1 my-button" type="button" onClick={(e) => this.down(e, i)} />}
+            </div>
+            :
+            <button className="fas fa-trash-alt my-icon fa-lg mx-1 my-button" type="button" onClick={(e) => this.deleteDiscussion(e, i)} />
+          }
         </div>
       );
     }
@@ -150,14 +189,30 @@ export default class RegistroConsejos extends Component {
   getCouncilTypes() {
     const info = [];
     for (let i = 0; i < this.state.tipoSesion.length; i++) {
-      let id_tipo_sesion = this.state.tipoSesion[i].id_tipo_sesion;
-      let descripcion = this.state.tipoSesion[i].descripcion;
+      let tipoSesion = this.state.tipoSesion[i];
       info.push(
         <div className="custom-control custom-radio" key={i}>
-          <input type="radio" id={descripcion} name="sesion" value={id_tipo_sesion} onChange={this.handleOptionChange}
-            checked={parseInt(this.state.sesionSeleccionada, 10) === id_tipo_sesion} className="custom-control-input" />
-          <label className="custom-control-label" htmlFor={descripcion}>
-            {descripcion}
+          <input type="radio" id={tipoSesion.descripcion} name="sesionSeleccionada" value={tipoSesion.id_tipo_sesion} onChange={this.handleInputChange}
+            checked={parseInt(this.state.sesionSeleccionada, 10) === tipoSesion.id_tipo_sesion} className="custom-control-input" />
+          <label className="custom-control-label" htmlFor={tipoSesion.descripcion}>
+            {tipoSesion.descripcion}
+          </label>
+        </div>
+      );
+    }
+    return info;
+  }
+
+  getDiscussionTypes() {
+    const info = [];
+    for (let i = 0; i < this.state.tipoPunto.length; i++) {
+      let tipo_punto = this.state.tipoPunto[i];
+      info.push(
+        <div className="custom-control custom-radio mx-auto" key={i}>
+          <input type="radio" id={tipo_punto.descripcion} name="puntoSeleccionado" value={tipo_punto.id_tipo_punto} onChange={this.handleInputChange}
+            checked={parseInt(this.state.puntoSeleccionado, 10) === tipo_punto.id_tipo_punto} className="custom-control-input" />
+          <label className="custom-control-label" htmlFor={tipo_punto.descripcion}>
+            {tipo_punto.descripcion}
           </label>
         </div>
       );
@@ -204,7 +259,7 @@ export default class RegistroConsejos extends Component {
                       </div>
                     </div>
                     <div className='registro-container der'>
-                      <p className='lead text-center'>
+                      <p className='text-center'>
                         Puntos de Agenda Iniciales
                     </p>
                       <div className="form-group">
@@ -212,9 +267,27 @@ export default class RegistroConsejos extends Component {
                           <textarea placeholder='Punto de agenda (opcional)' name='punto' className="form-control mr-2" onChange={this.handleInputChange} value={this.state.punto} />
                           <button className="fas fa-plus-square my-icon fa-lg my-button" type="button" onClick={this.addDiscussion} />
                         </div>
+                        <div className="form-group d-flex align-items-center">
+                          {this.getDiscussionTypes()}
+                        </div>
                         <div className='punto-nuevo mt-2'>
                           {this.getDiscussions()}
                         </div>
+                        {this.state.puntos.length > 1 &&
+                          <div className='d-flex align-items-center justify-content-end'>
+                            {this.state.ordenar ?
+                              <>
+                                <p className='m-0 mr-2'>Aplicar Orden</p>
+                                <button className="far fa-check-circle my-icon fa-lg my-button" type="button" onClick={this.sort} />
+                              </>
+                              :
+                              <>
+                                <p className='m-0 mr-2'>Ordenar</p>
+                                <button className="fas fa-sort my-icon fa-lg my-button" type="button" onClick={this.sort} />
+                              </>
+                            }
+                          </div>
+                        }
                       </div>
                     </div>
                   </div>

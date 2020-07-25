@@ -4,7 +4,6 @@ import axios from 'axios';
 import SolicitudAgenda from './SolicitudAgenda';
 import auth from "../../helpers/auth";
 
-
 export default class AgendaOficial extends Component {
   constructor(props) {
     super(props);
@@ -12,16 +11,33 @@ export default class AgendaOficial extends Component {
       consecutivo: this.props.consecutivo,
       punto: '',
       puntos: [],
+      tipoPunto: [],
+      puntoSeleccionado: 1,
+      ordenar: false,
+      orden: 0,
       redirect: false
     }
     this.handleInputChange = this.handleInputChange.bind(this);
     this.addDiscussion = this.addDiscussion.bind(this);
     this.deleteDiscussion = this.deleteDiscussion.bind(this);
     this.handleUpdate = this.handleUpdate.bind(this);
+    this.sort = this.sort.bind(this);
+    this.doneSorting = this.doneSorting.bind(this);
+    this.up = this.up.bind(this);
+    this.down = this.down.bind(this);
   }
 
   componentDidMount() {
     this.getDiscussionsFromBD();
+    axios.get('/tipo_punto')
+      .then(res => {
+        if (res.data.success) {
+          this.setState({
+            tipoPunto: res.data.discussionTypes
+          });
+        }
+      })
+      .catch((err) => console.log(err));
   }
 
   getDiscussionsFromBD() {
@@ -29,7 +45,8 @@ export default class AgendaOficial extends Component {
       .then(resp => {
         if (resp.data.success) {
           this.setState({
-            puntos: resp.data.discussions
+            puntos: resp.data.discussions,
+            orden: resp.data.discussions.length
           });
         } else {
           this.setState({
@@ -54,12 +71,13 @@ export default class AgendaOficial extends Component {
       auth.verifyToken()
         .then(value => {
           if (value) {
-            axios.post('/punto', { asunto: this.state.punto, consecutivo: this.state.consecutivo, id_tipo_punto: 1, cedula: auth.getInfo().cedula })
+            axios.post('/punto', { asunto: this.state.punto, consecutivo: this.state.consecutivo, id_estado_punto: 1, cedula: auth.getInfo().cedula, orden: this.state.orden, id_tipo_punto: 2 })
               .then(res => {
                 if (res.data.success) {
                   this.getDiscussionsFromBD();
                   this.setState({
-                    punto: ''
+                    punto: '',
+                    orden: this.state.orden + 1
                   });
                 }
               })
@@ -84,6 +102,9 @@ export default class AgendaOficial extends Component {
             .then(res => {
               if (res.data.success) {
                 this.getDiscussionsFromBD();
+                this.setState({
+                  orden: this.state.orden - 1
+                });
               }
             })
             .catch((err) => console.log(err));
@@ -97,6 +118,44 @@ export default class AgendaOficial extends Component {
       .catch((err) => console.log(err));
   }
 
+  doneSorting(e) {
+    e.preventDefault();
+    axios.put('/punto/ordenar/', { puntos: this.state.puntos })
+      .then(res => {
+        if (res.data.success) {
+          this.setState({
+            ordenar: !this.state.ordenar
+          });
+        }
+      })
+      .catch((err) => console.log(err));
+  }
+
+  sort(e) {
+    e.preventDefault();
+    this.setState({
+      ordenar: !this.state.ordenar
+    });
+  }
+
+  up(e, i) {
+    e.preventDefault();
+    let puntos = this.state.puntos;
+    [puntos[i - 1], puntos[i]] = [puntos[i], puntos[i - 1]];
+    this.setState({
+      puntos: puntos
+    });
+  }
+
+  down(e, i) {
+    e.preventDefault();
+    let puntos = this.state.puntos;
+    [puntos[i + 1], puntos[i]] = [puntos[i], puntos[i + 1]];
+    this.setState({
+      puntos: puntos
+    });
+  }
+
   handleUpdate() {
     this.getDiscussionsFromBD();
   }
@@ -108,11 +167,35 @@ export default class AgendaOficial extends Component {
       discussions.push(
         <div className='d-flex justify-content-between align-items-center my-2' key={i}>
           <li className='text-justify'>{punto.asunto}</li>
-          <button className="fas fa-trash-alt my-icon fa-lg my-button mx-1" type="button" onClick={(e) => this.deleteDiscussion(e, punto.id_punto)} />
+          {this.state.ordenar ?
+            <div className='d-flex'>
+              {i !== 0 && <button className="far fa-caret-square-up my-icon fa-lg mx-1 my-button" type="button" onClick={(e) => this.up(e, i)} />}
+              {i !== (this.state.puntos.length - 1) && <button className="far fa-caret-square-down my-icon fa-lg mx-1 my-button" type="button" onClick={(e) => this.down(e, i)} />}
+            </div>
+            :
+            <button className="fas fa-trash-alt my-icon fa-lg mx-1 my-button" type="button" onClick={(e) => this.deleteDiscussion(e, punto.id_punto)} />
+          }
         </div>
       );
     }
     return discussions;
+  }
+
+  getDiscussionTypes() {
+    const info = [];
+    for (let i = 0; i < this.state.tipoPunto.length; i++) {
+      let tipo_punto = this.state.tipoPunto[i];
+      info.push(
+        <div className="custom-control custom-radio mx-auto" key={i}>
+          <input type="radio" id={tipo_punto.descripcion} name="puntoSeleccionado" value={tipo_punto.id_tipo_punto} onChange={this.handleInputChange}
+            checked={parseInt(this.state.puntoSeleccionado, 10) === tipo_punto.id_tipo_punto} className="custom-control-input" />
+          <label className="custom-control-label" htmlFor={tipo_punto.descripcion}>
+            {tipo_punto.descripcion}
+          </label>
+        </div>
+      );
+    }
+    return info;
   }
 
   render() {
@@ -127,6 +210,9 @@ export default class AgendaOficial extends Component {
             <textarea placeholder='Punto de agenda (opcional)' name='punto' className="form-control mr-2" onChange={this.handleInputChange} value={this.state.punto} />
             <button className="fas fa-plus-square my-icon fa-lg my-button" type="button" onClick={this.addDiscussion} />
           </div>
+          <div className="form-group d-flex align-items-center">
+            {this.getDiscussionTypes()}
+          </div>
           {this.state.puntos.length === 0 && <p className='my-muted'>No se han agregado puntos de agenda.</p>}
           <div className='punto-editable mt-2'>
             <ol className='pl-4 m-0'>
@@ -134,6 +220,21 @@ export default class AgendaOficial extends Component {
             </ol>
           </div>
         </div>
+        {this.state.puntos.length > 1 &&
+          <div className='d-flex align-items-center justify-content-end'>
+            {this.state.ordenar ?
+              <>
+                <p className='m-0 mr-2'>Aplicar Orden</p>
+                <button className="far fa-check-circle my-icon fa-lg my-button" type="button" onClick={this.doneSorting} />
+              </>
+              :
+              <>
+                <p className='m-0 mr-2'>Ordenar</p>
+                <button className="fas fa-sort my-icon fa-lg my-button" type="button" onClick={this.sort} />
+              </>
+            }
+          </div>
+        }
       </>
     );
   }
