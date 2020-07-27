@@ -259,7 +259,7 @@ export default class RegistroConsejos extends Component {
                       </div>
                     </div>
                     <div className='registro-container der'>
-                      <p className='text-center'>
+                      <p className='text-center m-0'>
                         Puntos de Agenda Iniciales
                     </p>
                       <div className="form-group">

@@ -24,7 +24,6 @@ export default class Consejos extends Component {
     }
 
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount() {
@@ -38,9 +37,17 @@ export default class Consejos extends Component {
                   isLoading: false,
                   consejo: res.data.council
                 });
-                axios.get(`/punto/aprobado/${this.state.consecutivo}`)
+                axios.get(`/punto/votacion/${this.state.consecutivo}`)
                   .then(resp => {
                     if (resp.data.success) {
+                      for (let i = 0; i < resp.data.discussions.length; i++) {
+                        resp.data.discussions[i].editable = false;
+                        if (resp.data.discussions[i].abstencion === null) {
+                          resp.data.discussions[i].nuevo = true;
+                        } else {
+                          resp.data.discussions[i].nuevo = false;
+                        }
+                      }
                       this.setState({
                         aprobados: resp.data.discussions
                       });
@@ -65,20 +72,130 @@ export default class Consejos extends Component {
       .catch((err) => console.log(err));
   }
 
-  handleInputChange(e) {
-
+  handleInputChange(e, i) {
+    let value = e.target.value;
+    let name = e.target.name;
+    if ((!Number(value)) && (value !== '')) {
+      return;
+    }
+    let puntos = this.state.aprobados;
+    puntos[i][name] = value;
+    this.setState({
+      aprobados: puntos
+    });
   }
 
-  handleSubmit(e) {
+  saveChanges(e, i) {
     e.preventDefault();
+    let puntos = this.state.aprobados;
+    puntos[i].editable = false;
+    if (puntos[i].favor === null) {
+      puntos[i].favor = 0;
+    }
+    if (puntos[i].contra === null) {
+      puntos[i].contra = 0;
+    }
+    if (puntos[i].abstencion === null) {
+      puntos[i].abstencion = 0;
+    }
+    let punto = puntos[i];
+    if (punto.nuevo) {
+      axios.post('/votacion', { id_punto: punto.id_punto, favor: punto.favor, contra: punto.contra, abstencion: punto.abstencion })
+        .then(res => {
+          if (res.data.success) {
+            puntos[i].nuevo = false;
+            this.setState({
+              aprobados: puntos
+            });
+          }
+        })
+        .catch((err) => console.log(err));
+    } else {
+      axios.put('/votacion', { id_punto: punto.id_punto, favor: punto.favor, contra: punto.contra, abstencion: punto.abstencion })
+        .then(res => {
+          console.log(res);
+          if (res.data.success) {
+            this.setState({
+              aprobados: puntos
+            });
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+  }
+
+  makeEditable(e, i) {
+    e.preventDefault();
+    let puntos = this.state.aprobados;
+    puntos[i].editable = true;
+    this.setState({
+      aprobados: puntos
+    });
   }
 
   getDiscussions() {
     const discussions = [];
     for (let i = 0; i < this.state.aprobados.length; i++) {
-      discussions.push(<li className='m-0 text-justify' key={i}>{this.state.aprobados[i].asunto}</li>);
+      discussions.push(
+        this.getDiscussion(this.state.aprobados[i], i)
+      );
     }
     return discussions;
+  }
+
+  getDiscussion(discussion, i) {
+    if (discussion.id_tipo_punto === 1) {
+      return <li className='m-0 text-justify' key={i}>{discussion.asunto}</li>;
+    }
+    if (discussion.editable) {
+      return (
+        <div className='my-2' key={i}>
+          <li className='m-0 text-justify'>{discussion.asunto}</li>
+          <div className='d-flex justify-content-between align-items-center'>
+            <div className='d-flex align-items-center'>
+              {/* <div className='form-group'> */}
+              <input type="text" required maxLength="4" name="favor"
+                placeholder="a favor" autoComplete="off" className="form-control votacion-input"
+                onChange={(e) => this.handleInputChange(e, i)} value={discussion.favor === null ? '' : discussion.favor} />
+              {/* </div> */}
+              {/* <div className='form-group'> */}
+              <input type="text" required maxLength="4" name="contra"
+                placeholder="en contra" autoComplete="off" className="form-control votacion-input mx-2"
+                onChange={(e) => this.handleInputChange(e, i)} value={discussion.contra === null ? '' : discussion.contra} />
+              {/* </div> */}
+              {/* <div className='form-group'> */}
+              <input type="text" required maxLength="4" name="abstencion"
+                placeholder="abstenciones" autoComplete="off" className="form-control votacion-input"
+                onChange={(e) => this.handleInputChange(e, i)} value={discussion.abstencion === null ? '' : discussion.abstencion} />
+              {/* </div> */}
+            </div>
+            <button className="far fa-check-circle my-icon fa-lg my-button mx-1" type="button" onClick={(e) => this.saveChanges(e, i)} />
+          </div>
+        </div>
+      );
+    }
+    if (!discussion.nuevo) {
+      return (
+        <div className='my-2' key={i}>
+          <li className='m-0 text-justify'>{discussion.asunto}</li>
+          <p className='m-0'>Resultados de votaciones</p>
+          <div className='d-flex justify-content-between align-items-center'>
+            <div className='d-flex align-items-center'>
+              <p className='m-0'>A favor: {discussion.favor}</p>
+              <p className='m-0 mx-2'>En contra: {discussion.contra}</p>
+              <p className='m-0'>Abstenciones: {discussion.abstencion}</p>
+            </div>
+            <button className="fas fa-edit my-icon fa-lg mx-1 my-button" type="button" onClick={(e) => this.makeEditable(e, i)} />
+          </div>
+        </div>
+      )
+    }
+    return (
+      <div className='d-flex justify-content-between align-items-center my-2' key={i}>
+        <li className='m-0 text-justify'>{discussion.asunto}</li>
+        <button className="fas fa-vote-yea my-icon fa-lg mx-1 my-button" type="button" onClick={(e) => this.makeEditable(e, i)} />
+      </div>
+    );
   }
 
   render() {
@@ -86,10 +203,10 @@ export default class Consejos extends Component {
       <>
         <Navegacion />
         <div className="row m-0">
-          <div className="col-md-10 m-auto">
+          <div className="col-md-11 m-auto">
             <div className="card border-primary consejo-card">
               <div className="card-body">
-              <Link to='/gConsejos'><i className="fas fa-times fa-lg m-2 ubicar-salida" style={{ color: 'navy' }}></i></Link>
+                <Link to='/gConsejos'><i className="fas fa-times fa-lg m-2 ubicar-salida" style={{ color: 'navy' }}></i></Link>
                 <div className='todo-registro'>
                   <div className='registro-container izq'>
                     <p className="card-title text-center text-uppercase m-0">{this.state.consejo.institucion}</p>
@@ -104,7 +221,7 @@ export default class Consejos extends Component {
                     <Convocados consecutivo={this.state.consecutivo} />
                   </div>
                   <div className='registro-container der'>
-                      <p>Puntos de Agenda:</p>
+                    <p>Puntos de Agenda:</p>
                     <div className='punto-nonspace'>
                       <ol className='pl-4 m-0'>
                         {this.getDiscussions()}

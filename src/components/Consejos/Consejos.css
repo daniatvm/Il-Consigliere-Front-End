@@ -90,8 +90,12 @@
 }
 
 .punto-nuevo {
-    height: 200px;
+    height: 225px;
     overflow: auto;
+}
+
+.votacion-input {
+    width: 110px;
 }
 
 @media only screen and (max-width: 900px) {

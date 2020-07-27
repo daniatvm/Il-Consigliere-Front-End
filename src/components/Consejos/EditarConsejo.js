@@ -27,7 +27,6 @@ export default class EditarConsejo extends Component {
     }
 
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleOptionChange = this.handleOptionChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -80,12 +79,6 @@ export default class EditarConsejo extends Component {
     });
   }
 
-  handleOptionChange(e) {
-    this.setState({
-      sesionSeleccionada: e.target.value
-    });
-  }
-
   handleSubmit(e) {
     e.preventDefault();
     auth.verifyToken()
@@ -121,7 +114,7 @@ export default class EditarConsejo extends Component {
       let descripcion = this.state.tipoSesion[i].descripcion;
       info.push(
         <div className="custom-control custom-radio" key={i}>
-          <input type="radio" id={descripcion} name="sesion" value={id_tipo_sesion} onChange={this.handleOptionChange}
+          <input type="radio" id={descripcion} name="sesionSeleccionada" value={id_tipo_sesion} onChange={this.handleOptionChange}
             checked={parseInt(this.state.sesionSeleccionada, 10) === id_tipo_sesion} className="custom-control-input" />
           <label className="custom-control-label" htmlFor={descripcion}>
             {descripcion}
