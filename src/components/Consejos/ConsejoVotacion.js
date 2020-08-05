@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Redirect, Link } from 'react-router-dom';
 import axios from 'axios';
+import swal from 'sweetalert';
 import Convocados from './Convocados';
 import Navegacion from '../Navegacion/Navegacion';
 import auth from '../../helpers/auth';
@@ -24,6 +25,7 @@ export default class Consejos extends Component {
     }
 
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.checkedCouncil = this.checkedCouncil.bind(this);
   }
 
   componentDidMount() {
@@ -75,7 +77,7 @@ export default class Consejos extends Component {
   handleInputChange(e, i) {
     let value = e.target.value;
     let name = e.target.name;
-    if ((!Number(value)) && (value !== '')) {
+    if ((!Number(value)) && (value !== '') && (value !== '0')) {
       return;
     }
     let puntos = this.state.aprobados;
@@ -113,7 +115,6 @@ export default class Consejos extends Component {
     } else {
       axios.put('/votacion', { id_punto: punto.id_punto, favor: punto.favor, contra: punto.contra, abstencion: punto.abstencion })
         .then(res => {
-          console.log(res);
           if (res.data.success) {
             this.setState({
               aprobados: puntos
@@ -133,6 +134,28 @@ export default class Consejos extends Component {
     });
   }
 
+  checkedCouncil(e) {
+    e.preventDefault();
+    swal({
+      title: "Confirmación",
+      text: `La información de este consejo no se podrá volver a editar.`,
+      icon: "warning",
+      buttons: ["Cancelar", "Confirmar"],
+      dangerMode: true,
+    })
+      .then((willUpdate) => {
+        if (willUpdate) {
+          axios.put(`/consejo/no_editable/${this.state.consecutivo}`)
+            .then(res => {
+              if (res.data.success) {
+                this.props.history.push('/gConsejos');
+              }
+            })
+            .catch((err) => console.log(err));
+        }
+      });
+  }
+
   getDiscussions() {
     const discussions = [];
     for (let i = 0; i < this.state.aprobados.length; i++) {
@@ -144,7 +167,23 @@ export default class Consejos extends Component {
   }
 
   getDiscussion(discussion, i) {
-    if (discussion.id_tipo_punto === 1) {
+    if (!this.state.consejo.editable) {
+      if (discussion.id_tipo_punto === 2) {
+        return <li className='m-0 text-justify' key={i}>{discussion.asunto}</li>;
+      }
+      return (
+        <div className='my-2' key={i}>
+          <li className='m-0 text-justify'>{discussion.asunto}</li>
+          <p className='m-0'>Resultados de votaciones</p>
+          <div className='d-flex align-items-center'>
+            <p className='m-0'>A favor: {discussion.favor}</p>
+            <p className='m-0 mx-2'>En contra: {discussion.contra}</p>
+            <p className='m-0'>Abstenciones: {discussion.abstencion}</p>
+          </div>
+        </div>
+      );
+    }
+    if (discussion.id_tipo_punto === 2) {
       return <li className='m-0 text-justify' key={i}>{discussion.asunto}</li>;
     }
     if (discussion.editable) {
@@ -153,21 +192,15 @@ export default class Consejos extends Component {
           <li className='m-0 text-justify'>{discussion.asunto}</li>
           <div className='d-flex justify-content-between align-items-center'>
             <div className='d-flex align-items-center'>
-              {/* <div className='form-group'> */}
               <input type="text" required maxLength="4" name="favor"
                 placeholder="a favor" autoComplete="off" className="form-control votacion-input"
                 onChange={(e) => this.handleInputChange(e, i)} value={discussion.favor === null ? '' : discussion.favor} />
-              {/* </div> */}
-              {/* <div className='form-group'> */}
               <input type="text" required maxLength="4" name="contra"
                 placeholder="en contra" autoComplete="off" className="form-control votacion-input mx-2"
                 onChange={(e) => this.handleInputChange(e, i)} value={discussion.contra === null ? '' : discussion.contra} />
-              {/* </div> */}
-              {/* <div className='form-group'> */}
               <input type="text" required maxLength="4" name="abstencion"
                 placeholder="abstenciones" autoComplete="off" className="form-control votacion-input"
                 onChange={(e) => this.handleInputChange(e, i)} value={discussion.abstencion === null ? '' : discussion.abstencion} />
-              {/* </div> */}
             </div>
             <button className="far fa-check-circle my-icon fa-lg my-button mx-1" type="button" onClick={(e) => this.saveChanges(e, i)} />
           </div>
@@ -188,7 +221,7 @@ export default class Consejos extends Component {
             <button className="fas fa-edit my-icon fa-lg mx-1 my-button" type="button" onClick={(e) => this.makeEditable(e, i)} />
           </div>
         </div>
-      )
+      );
     }
     return (
       <div className='d-flex justify-content-between align-items-center my-2' key={i}>
@@ -222,13 +255,19 @@ export default class Consejos extends Component {
                   </div>
                   <div className='registro-container der'>
                     <p>Puntos de Agenda:</p>
-                    <div className='punto-nonspace'>
+                    <div className='punto-votacion'>
                       <ol className='pl-4 m-0'>
                         {this.getDiscussions()}
                       </ol>
                     </div>
                   </div>
                 </div>
+                {this.state.consejo.editable &&
+                  <div className="form-group d-flex justify-content-around">
+                    <button type="button" className="btn btn-outline-primary mt-4 editar-button" onClick={this.checkedCouncil}>Guardar Cambios</button>
+                    <Link className="btn btn-outline-secondary mt-4 editar-button" to='/gConsejos'>Cancelar</Link>
+                  </div>
+                }
               </div>
             </div>
           </div>

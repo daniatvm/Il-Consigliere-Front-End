@@ -94,6 +94,11 @@
     overflow: auto;
 }
 
+.punto-votacion {
+    height: 400px;
+    overflow: auto;
+}
+
 .votacion-input {
     width: 110px;
 }

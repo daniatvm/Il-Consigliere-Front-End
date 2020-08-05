@@ -79,7 +79,7 @@ export default class RegistroConsejos extends Component {
     e.preventDefault();
     if (this.state.punto !== '') {
       let puntos = this.state.puntos;
-      puntos.push(this.state.punto);
+      puntos.push({ asunto: this.state.punto, id_tipo_punto: parseInt(this.state.puntoSeleccionado) });
       this.setState({
         punto: '',
         puntos: puntos
@@ -171,7 +171,10 @@ export default class RegistroConsejos extends Component {
     for (let i = 0; i < this.state.puntos.length; i++) {
       formatoPuntos.push(
         <div className='d-flex justify-content-between align-items-center my-2' key={i}>
-          <p className='m-0 text-justify'>{(i + 1) + '. ' + this.state.puntos[i]}</p>
+          <div>
+            <p className='m-0 text-justify'>{(i + 1) + '. ' + this.state.puntos[i].asunto}</p>
+            {this.state.puntos[i].id_tipo_punto === 1 && <p className='my-muted m-0 text-justify'>*Este punto es votativo</p>}
+          </div>
           {this.state.ordenar ?
             <div className='d-flex'>
               {i !== 0 && <button className="far fa-caret-square-up my-icon fa-lg mx-1 my-button" type="button" onClick={(e) => this.up(e, i)} />}
@@ -206,13 +209,13 @@ export default class RegistroConsejos extends Component {
   getDiscussionTypes() {
     const info = [];
     for (let i = 0; i < this.state.tipoPunto.length; i++) {
-      let tipo_punto = this.state.tipoPunto[i];
+      let tipoPunto = this.state.tipoPunto[i];
       info.push(
         <div className="custom-control custom-radio mx-auto" key={i}>
-          <input type="radio" id={tipo_punto.descripcion} name="puntoSeleccionado" value={tipo_punto.id_tipo_punto} onChange={this.handleInputChange}
-            checked={parseInt(this.state.puntoSeleccionado, 10) === tipo_punto.id_tipo_punto} className="custom-control-input" />
-          <label className="custom-control-label" htmlFor={tipo_punto.descripcion}>
-            {tipo_punto.descripcion}
+          <input type="radio" id={tipoPunto.descripcion} name="puntoSeleccionado" value={tipoPunto.id_tipo_punto} onChange={this.handleInputChange}
+            checked={parseInt(this.state.puntoSeleccionado, 10) === tipoPunto.id_tipo_punto} className="custom-control-input" />
+          <label className="custom-control-label" htmlFor={tipoPunto.descripcion}>
+            {tipoPunto.descripcion}
           </label>
         </div>
       );

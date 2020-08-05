@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
+import { Redirect, Link } from 'react-router-dom';
 import Navegacion from '../Navegacion/Navegacion';
 import AgendaOficial from './AgendaOficial';
 import axios from 'axios';
 import auth from '../../helpers/auth';
 import { getTodaysDate } from '../../helpers/dates';
 import { Loading } from '../../helpers/Loading';
-import { Redirect, Link } from 'react-router-dom';
 import DefaultComponent from '../../helpers/DefaultComponent';
 import './Consejos.css';
 
@@ -114,7 +114,7 @@ export default class EditarConsejo extends Component {
       let descripcion = this.state.tipoSesion[i].descripcion;
       info.push(
         <div className="custom-control custom-radio" key={i}>
-          <input type="radio" id={descripcion} name="sesionSeleccionada" value={id_tipo_sesion} onChange={this.handleOptionChange}
+          <input type="radio" id={descripcion} name="sesionSeleccionada" value={id_tipo_sesion} onChange={this.handleInputChange}
             checked={parseInt(this.state.sesionSeleccionada, 10) === id_tipo_sesion} className="custom-control-input" />
           <label className="custom-control-label" htmlFor={descripcion}>
             {descripcion}

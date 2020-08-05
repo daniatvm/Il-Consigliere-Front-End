@@ -71,7 +71,7 @@ export default class AgendaOficial extends Component {
       auth.verifyToken()
         .then(value => {
           if (value) {
-            axios.post('/punto', { asunto: this.state.punto, consecutivo: this.state.consecutivo, id_estado_punto: 1, cedula: auth.getInfo().cedula, orden: this.state.orden, id_tipo_punto: 2 })
+            axios.post('/punto', { asunto: this.state.punto, consecutivo: this.state.consecutivo, id_estado_punto: 1, cedula: auth.getInfo().cedula, orden: this.state.orden, id_tipo_punto: this.state.puntoSeleccionado })
               .then(res => {
                 if (res.data.success) {
                   this.getDiscussionsFromBD();
@@ -166,7 +166,10 @@ export default class AgendaOficial extends Component {
       let punto = this.state.puntos[i];
       discussions.push(
         <div className='d-flex justify-content-between align-items-center my-2' key={i}>
-          <li className='text-justify'>{punto.asunto}</li>
+          <div>
+            <li className='text-justify m-0'>{punto.asunto}</li>
+            {punto.id_tipo_punto === 1 && <p className='text-justify m-0 my-muted'>*Este punto es votativo</p>}
+          </div>
           {this.state.ordenar ?
             <div className='d-flex'>
               {i !== 0 && <button className="far fa-caret-square-up my-icon fa-lg mx-1 my-button" type="button" onClick={(e) => this.up(e, i)} />}
