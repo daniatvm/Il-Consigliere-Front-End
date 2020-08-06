@@ -33,6 +33,7 @@ export default class RegistroConsejos extends Component {
     this.sort = this.sort.bind(this);
     this.up = this.up.bind(this);
     this.down = this.down.bind(this);
+    this.button = React.createRef();
   }
 
   componentDidMount() {
@@ -89,6 +90,13 @@ export default class RegistroConsejos extends Component {
 
   sort(e) {
     e.preventDefault();
+    if (!this.state.ordenar) {
+      this.button.current.setAttribute('disabled', 'disabled');
+      this.button.current.style.color = 'grey';
+    } else {
+      this.button.current.removeAttribute('disabled', 'disabled');
+      this.button.current.style.color = 'navy';
+    }
     this.setState({
       ordenar: !this.state.ordenar
     });
@@ -264,11 +272,11 @@ export default class RegistroConsejos extends Component {
                     <div className='registro-container der'>
                       <p className='text-center m-0'>
                         Puntos de Agenda Iniciales
-                    </p>
+                      </p>
                       <div className="form-group">
                         <div className='d-flex align-items-center'>
                           <textarea placeholder='Punto de agenda (opcional)' name='punto' className="form-control mr-2" onChange={this.handleInputChange} value={this.state.punto} />
-                          <button className="fas fa-plus-square my-icon fa-lg my-button" type="button" onClick={this.addDiscussion} />
+                          <button className="fas fa-plus-square my-icon fa-lg my-button" type="button" onClick={this.addDiscussion} ref={this.button} />
                         </div>
                         <div className="form-group d-flex align-items-center">
                           {this.getDiscussionTypes()}

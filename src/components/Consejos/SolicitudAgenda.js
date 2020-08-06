@@ -131,7 +131,11 @@ export default class SolicitudAgenda extends Component {
     });
     return (this.state.redirect ? <Redirect to='/' /> :
       <>
-        <button className="fas fa-tasks my-icon fa-lg my-button" type="button" data-toggle="modal" data-target="#solicitudes" />
+        {this.props.ordenar ?
+          <button className="fas fa-tasks my-disabled disabled fa-lg my-button" type="button" />
+          :
+          <button className="fas fa-tasks my-icon fa-lg my-button" type="button" data-toggle="modal" data-target="#solicitudes" />
+        }
         <div className="modal fade" id="solicitudes" role="dialog">
           <div className="modal-dialog modal-dialog-centered" role="document">
             <div className="modal-content modal-border">

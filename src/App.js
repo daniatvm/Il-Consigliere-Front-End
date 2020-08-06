@@ -12,6 +12,7 @@ import EditarConsejo from './components/Consejos/EditarConsejo';
 import ConsejoVotacion from './components/Consejos/ConsejoVotacion';
 import ListaUsuarios from './components/Usuarios/ListaUsuarios';
 import Registro from './components/Usuarios/Registro';
+import NuevaClave from './components/Usuarios/NuevaClave';
 import Usuario from './components/Usuarios/Usuario';
 import Cuenta from './components/Cuenta/Cuenta';
 import ProtectedRoute from './helpers/ProtectedRoute';
@@ -23,6 +24,7 @@ function App() {
     <Router>
       <Switch>
         <Route path='/gUsuarios/registro/:token' component={Registro} />
+        <Route path='/gUsuarios/cambioClave/:token' component={NuevaClave} />
         <ProtectedRoute path='/gConsejos/registro' role={Role.CouncilModifier} component={RegistroConsejos} />
         <ProtectedRoute path='/gConsejos/participantes/:consecutivo' role={Role.CouncilModifier} component={Convocar} />
         <ProtectedRoute path='/gConsejos/editar/:consecutivo' role={Role.CouncilModifier} component={EditarConsejo} />

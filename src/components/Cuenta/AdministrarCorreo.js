@@ -156,7 +156,7 @@ export default class AdministrarCorreo extends Component {
         </form>
         {this.state.correos.length === 0 &&
           <div className="my-div mx-auto">
-            <p className="my-muted">No tiene correos registrados.</p>
+            <p className="my-muted">Registre al menos un correo, no podrá recuperar su contraseña sin un correo asociado a su cuenta ni recibir actualizaciones de consejos.</p>
           </div>
         }
         <div className="email-container">

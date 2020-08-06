@@ -25,6 +25,7 @@ export default class AgendaOficial extends Component {
     this.doneSorting = this.doneSorting.bind(this);
     this.up = this.up.bind(this);
     this.down = this.down.bind(this);
+    this.button = React.createRef();
   }
 
   componentDidMount() {
@@ -126,6 +127,8 @@ export default class AgendaOficial extends Component {
           this.setState({
             ordenar: !this.state.ordenar
           });
+          this.button.current.removeAttribute('disabled', 'disabled');
+          this.button.current.style.color = 'navy';
         }
       })
       .catch((err) => console.log(err));
@@ -136,6 +139,8 @@ export default class AgendaOficial extends Component {
     this.setState({
       ordenar: !this.state.ordenar
     });
+    this.button.current.setAttribute('disabled', 'disabled');
+    this.button.current.style.color = 'grey';
   }
 
   up(e, i) {
@@ -206,12 +211,12 @@ export default class AgendaOficial extends Component {
       <>
         <div className='d-flex justify-content-center align-items-center mb-2'>
           <p className='text-center m-0 pr-2'>Puntos de Agenda Oficiales y Solicitudes de Agenda</p>
-          <SolicitudAgenda consecutivo={this.state.consecutivo} updateParent={this.handleUpdate} />
+          <SolicitudAgenda consecutivo={this.state.consecutivo} updateParent={this.handleUpdate} ordenar={this.state.ordenar} />
         </div>
         <div className="form-group">
           <div className='d-flex align-items-center'>
             <textarea placeholder='Punto de agenda (opcional)' name='punto' className="form-control mr-2" onChange={this.handleInputChange} value={this.state.punto} />
-            <button className="fas fa-plus-square my-icon fa-lg my-button" type="button" onClick={this.addDiscussion} />
+            <button className="fas fa-plus-square my-icon fa-lg my-button" type="button" onClick={this.addDiscussion} ref={this.button} />
           </div>
           <div className="form-group d-flex align-items-center">
             {this.getDiscussionTypes()}

@@ -6,6 +6,7 @@ import auth from '../../helpers/auth';
 import roles from '../../helpers/roles';
 import { myAlert } from '../../helpers/alert';
 import './Acceso.css';
+import RecuperarClave from './RecuperarClave';
 
 export default class Acceso extends Component {
   constructor(props) {
@@ -100,11 +101,12 @@ export default class Acceso extends Component {
                     <button type="submit" className="btn btn-outline-primary btn-block mt-4">Accesar</button>
                   </div>
                 </form>
+                <RecuperarClave cedula={this.state.cedula} />
               </div>
             </div>
             <div className="alert alert-dismissible my-border alert-light pb-0">
               <button type="button" className="close" data-dismiss="alert">&times;</button>
-              <p>Recuerda solicitar una invitación para crear tu cuenta previamente.</p>
+              <p>Recuerde solicitar una invitación para crear tu cuenta previamente.</p>
             </div>
           </div>
         </div>
